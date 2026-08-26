@@ -53,8 +53,43 @@ pages — this is closer to an internal dashboard than a product.
 - Kanban board and data tables are the two layouts doing the most work here; get
   those right before spending time on anything else.
 
+## Design system to produce
+
+The design pass should settle these, because implementation reads directly from
+them. They become tokens in `src/app/theme.css.ts` — see STYLING.md.
+
+### Tokens needed
+
+- **Colour:** page background, raised surface, border, primary text, muted text, accent. Both a light and a dark palette — the portfolio site has a theme toggle and this should match that expectation.
+- **Status colours:** one per pipeline stage (saved, applied, interview, offer, rejected). These carry meaning, so they need to stay distinguishable in both themes and not rely on hue alone.
+- **Spacing scale:** a small fixed set (4/8/16/24/40 is the current placeholder). Dense enough for tables, not cramped.
+- **Type scale:** body, small/meta, and two or three heading sizes. A mono face for metadata and counts reads well against the sans and matches the portfolio's voice.
+- **Radii and borders:** one or two radii, one border colour. This is a utility tool; heavy shadows and large radii will fight the density.
+
+### Component inventory
+
+The screens above decompose into roughly these. Designing them once, as a set,
+beats designing each screen in isolation:
+
+- Application card (as it appears on the board)
+- Pipeline column / board container
+- Status badge (five states)
+- Data table row (companies list, application history)
+- Form field set (text, textarea, select, date)
+- Button (primary, secondary, destructive)
+- Empty state
+- Loading state (specifically for the AI tailoring call, which takes seconds)
+- Inline warning (the duplicate-application guard)
+
+### Constraints from the build
+
+- **Desktop-first**, but the board must degrade sanely at laptop widths — five columns is a lot of horizontal space.
+- Tables and the board should scroll within their own container, never make the page scroll sideways.
+- Prefer flat colour and borders over gradients and shadows: it keeps the token set small and the CSS simple.
+
 ## Explicitly out of scope for this design pass
 
 - Multi-user / team features
 - Mobile-first design (desktop-first is fine — this is a tool used at a desk)
-- The mock-interview and MCP-server stretch ideas from PLAN.md Phase 8
+- The mock-interview and MCP-server stretch ideas from PLAN.md Phase 10
+- Light/dark theming *machinery* — the palettes are in scope, the implementation is deferred (STYLING.md)

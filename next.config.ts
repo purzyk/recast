@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next'
+import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin'
+
+const withVanillaExtract = createVanillaExtractPlugin()
 
 // Standalone output produces a minimal, self-contained server bundle in
 // .next/standalone — the shape the Dockerfile expects, so the final image
@@ -7,4 +10,4 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 }
 
-export default nextConfig
+export default withVanillaExtract(nextConfig)
