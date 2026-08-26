@@ -31,15 +31,29 @@ that require it.
 ### Phase 3 — CI/CD pipeline
 - `.github/workflows/deploy.yml`: build the Docker image, push to GitHub Container Registry (`ghcr.io`)
 
-### Phase 4 — Deploy target
-- Create a Google Cloud project and enable the Cloud Run API
-- Extend the pipeline to deploy: `gcloud run deploy recast --image ghcr.io/purzyk/recast:latest ...`
-- Confirm the skeleton is live on its default `*.run.app` hostname
+### Phase 4 — Deploy target (done)
+- Project `recast-purzycki`, Cloud Run + Artifact Registry APIs enabled
+- Deployed from the GHCR image; live at `https://recast-444818248992.europe-west1.run.app`
+- Pipeline deploys automatically on push to `main`, authenticating via **Workload Identity Federation** — no service account key is stored in GitHub secrets, and the OIDC provider is restricted to the `purzyk/recast` repo
+- The deploy step ships the SHA-tagged image, not `:latest`, so each revision is pinned to its commit
 
-### Phase 5 — Domain
-- Add the `recast.purzycki.pl` CNAME record wherever purzycki.pl's DNS is managed
-- Map the custom domain to the Cloud Run service (`gcloud run domain-mappings create`), issue the Google-managed certificate
-- Confirm `recast.purzycki.pl` resolves to the deployed skeleton over HTTPS
+**Region note:** originally deployed to `europe-central2` (Warsaw), but that region
+rejects domain mappings outright (`Creating domain mappings is not allowed in
+europe-central2`). Moved to `europe-west1` (Belgium), which supports them. Costs
+roughly 25ms of latency — irrelevant here.
+
+**Cost guardrails, set before the service was deployable:**
+- Budget of 20 PLN scoped to this project, alerting at 50/90/100%. Note the budget must be in the billing account's own currency — a USD amount fails with an opaque `INVALID_ARGUMENT`.
+- `--max-instances=2` on the service. This is the guardrail that actually bounds spending; a budget alert only notifies.
+
+### Phase 5 — Domain (done)
+- `recast` CNAME → `ghs.googlehosted.com.` added in the mydevil DNS zone
+- Domain mapped to the Cloud Run service; `DomainRoutable` confirmed true
+- Google-managed certificate issues automatically once DNS resolves
+
+Note: the subdomain needs a **DNS record only** — not a "Strona WWW" entry in the
+mydevil panel. Creating a site there would auto-add A records pointing at mydevil
+and conflict with the CNAME.
 
 ### Phase 6 — Add Postgres
 - Add Postgres as a second container in `docker-compose.yml` for local dev
