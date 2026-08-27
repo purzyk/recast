@@ -27,6 +27,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Needed by the migration step below, which runs the Prisma CLI on the
+      # runner rather than inside the image.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -56,6 +67,22 @@ jobs:
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
+
+      # Migrations run here rather than at container startup: Cloud Run can
+      # start several instances at once, which would race each other applying
+      # the same migration. Running once in the pipeline also means a failed
+      # migration fails the build visibly, instead of leaving a half-migrated
+      # database behind a container that keeps restarting.
+      #
+      # Uses the direct (non-pooled) Neon URL — migrations need session-level
+      # advisory locks, which the transaction-mode pooler does not support.
+      # The secret is read from Secret Manager using the same Workload
+      # Identity credentials as the deploy, so it is never stored in GitHub.
+      - name: Run database migrations
+        run: |
+          DATABASE_URL="$(gcloud secrets versions access latest \
+            --secret=database-url-direct --project="$GCP_PROJECT")" \
+            npx prisma migrate deploy
 
       # Deploy the exact SHA-tagged image just built, not :latest — so the
       # revision is pinned to this commit and a re-run can't pick up a
