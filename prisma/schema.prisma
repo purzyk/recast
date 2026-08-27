@@ -1,0 +1,37 @@
+// Prisma 7: the connection URL no longer lives here. Migrations read it from
+// prisma.config.ts; the runtime client gets it via a driver adapter (see
+// src/lib/db.ts). Driver adapters also mean no Rust query-engine binary in the
+// image, which keeps Cloud Run cold starts down.
+generator client {
+  provider = "prisma-client-js"
+
+  // Generated into the source tree rather than node_modules so Next's
+  // standalone output tracing picks it up reliably.
+  output = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ApplicationStatus {
+  saved
+  applied
+  interview
+  offer
+  rejected
+}
+
+// Minimal for now — enough to prove migrations and queries work end to end.
+// Phase 7 designs this properly alongside companies and postings.
+model Application {
+  id        Int               @id @default(autoincrement())
+  company   String
+  role      String
+  status    ApplicationStatus @default(saved)
+  sourceUrl String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([status])
+}

@@ -1,5 +1,31 @@
 services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: recast
+      POSTGRES_PASSWORD: recast
+      POSTGRES_DB: recast
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # The app waits for this rather than crash-looping on a DB that is
+    # accepting TCP connections but not yet ready to serve queries.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U recast -d recast']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   app:
     build: .
     ports:
       - '3000:3000'
+    environment:
+      DATABASE_URL: postgresql://recast:recast@db:5432/recast
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

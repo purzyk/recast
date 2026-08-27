@@ -5,8 +5,16 @@
 FROM node:22-slim AS builder
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci
+
 COPY . .
+
+# The generated client is gitignored and .dockerignored, so it has to be built
+# here. Must run before `next build`, which imports it. Prisma 7 driver
+# adapters mean this emits plain JavaScript with no platform-specific engine
+# binary, so the image stays small and cold starts stay fast.
+RUN npx prisma generate
+
 RUN npm run build
 
 FROM node:22-slim AS runner
