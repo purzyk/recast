@@ -55,10 +55,37 @@ Note: the subdomain needs a **DNS record only** — not a "Strona WWW" entry in 
 mydevil panel. Creating a site there would auto-add A records pointing at mydevil
 and conflict with the CNAME.
 
-### Phase 6 — Add Postgres
-- Add Postgres as a second container in `docker-compose.yml` for local dev
-- Cloud Run is stateless/serverless — it can't host the Postgres container itself, so this phase also picks a free-tier managed Postgres for the deployed environment (e.g. Neon or Supabase) and wires its connection string through the CI/CD pipeline and Cloud Run's env vars
-- Confirm the deploy still works with the DB connected, before adding any real schema
+### Phase 6 — Add Postgres (done)
+- Local: Postgres as a compose service, with a healthcheck the app waits on
+- Deployed: **Neon** free tier, Frankfurt — closest region to Cloud Run's `europe-west1`, since the latency that matters is app-to-database, not user-to-database
+- ORM: **Prisma 7** with the `pg` driver adapter
+- `/api/health` reports real database reachability and returns 503 when it fails
+
+**Why a separate database provider:** Cloud Run is stateless and scales to
+zero, so it cannot host the Postgres container — the data would vanish on every
+scale-down. Cloud SQL, Google's own managed Postgres, has no free tier and bills
+continuously because it cannot scale to zero. Neon scales to zero like Cloud Run
+does, keeping both halves at $0.
+
+**Two connection strings, deliberately:**
+- *Pooled* (`-pooler` host) — used by the running app.
+- *Direct* — used by migrations. Neon's pooler runs in transaction mode and cannot support the session-level advisory locks Prisma migrations require.
+
+**Secrets:** both live in **Secret Manager**, not in GitHub secrets or plain
+Cloud Run env vars. The runtime service account reads the pooled URL; the CI
+service account reads the direct one using the same Workload Identity
+credentials as the deploy. No database credential is stored in GitHub.
+
+**Migrations run in the pipeline**, not at container startup — Cloud Run may
+start several instances simultaneously, which would race applying the same
+migration. Running once in CI also surfaces a failed migration as a failed
+build, rather than a half-migrated database behind a restarting container.
+
+**Prisma 7 notes** (it differs from most tutorials):
+- Connection URLs moved out of `schema.prisma` into `prisma.config.ts`; the runtime connects through a driver adapter.
+- Driver adapters mean no Rust query-engine binary in the image, which recovers most of the cold-start cost that ORM choice would otherwise add.
+- The client must be created lazily: Next evaluates route modules at build time to collect config, and `DATABASE_URL` does not exist there.
+- npm's `latest` tag for the `prisma` CLI currently resolves to an `8.0.0-rc` while `@prisma/client` latest is `7.10.0`. Both are pinned to `7.10.0` — installing without pinning gives a mismatched pair.
 
 ### Phase 7 — The CRM (the actually useful half)
 This is the part that solves the stated problem — never applying to the same posting
