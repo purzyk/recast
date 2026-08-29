@@ -130,7 +130,7 @@ Resolved:
 - ~~Theme scope~~ — dark and light together.
 
 Still open:
-- **The auth mechanism.** Agreed that it must exist before real data; the *how* is unpicked. A single password checked in middleware needs no tables and no dependency; Auth.js is the conventional answer and worth more on a CV. Decide before building Phase 7's write paths, since it determines whether there is a session to attribute anything to.
+- ~~The auth mechanism~~ — Google sign-in via Auth.js. Verified against Next 16; see AUTH.md for the recipe and the four gotchas the spike turned up. Not yet implemented: it needs Google OAuth credentials and secrets in Secret Manager first.
 - **Deployment of the first real migration.** The pipeline runs `prisma migrate deploy` automatically, so replacing the placeholder `Application` model will drop the table on the next push. It is empty, so nothing is lost — but worth doing deliberately rather than noticing afterwards.
 
 ## Cost notes
