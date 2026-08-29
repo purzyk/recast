@@ -92,9 +92,17 @@ This is the part that solves the stated problem — never applying to the same p
 twice — and it needs no AI, no API key and no extra billing. Shipping this alone
 gives a working, deployed, containerised app worth pointing at.
 
+- **Data model:** see SCHEMA.md — proposed and Prisma-validated, not yet migrated. It replaces the Phase 6 placeholder `Application`.
 - **CRM:** companies, job postings, application records with a status pipeline (saved → applied → interview → offer/rejected)
 - **Duplicate guard:** warn when adding a posting matching a company + role already in the pipeline
-- **Auth:** single-user is fine for a personal tool, but gate it behind at least basic auth before it's live on a public subdomain
+- **Theming:** dark and light both ship. Dark is primary; the light palette is fully specified, so there is no reason to defer it.
+- **Auth: blocking, not optional.** `recast.purzycki.pl` currently runs `--allow-unauthenticated`, which is fine for a skeleton and not fine for a list of where you are job hunting. A password gate goes in **before** any real application data does.
+
+**Design decisions carried in from the design pass** (argued in section 09 of
+the screens artifact, confirmed rather than overridden):
+1. The duplicate guard **warns, does not block** — a company reposting a role you genuinely want again must stay addable. Hence no unique constraint on `(companyId, role)`, only an index.
+2. Generated output **saves as a version, never a replacement** — so what you actually sent is still readable when a recruiter calls.
+3. Status changes **from the detail screen**, not only by dragging — a select that writes a `StatusEvent` is simpler than making the badge a menu.
 
 ### Phase 8 — Experience library
 - Input/store work history, projects, skills — the raw material the tailoring step will later draw from
@@ -114,11 +122,16 @@ than trusting an estimate.
 - Mock interview practice tool over WebRTC, questions generated from a stored job description
 - Small MCP server exposing the stored experience/project data, so any MCP-aware LLM client can query it directly
 
-## Open questions to resolve before Phase 7
+## Open questions
 
-- Single-user auth approach (simplest thing that isn't "no auth at all")
-- Exact CRM schema: what fields does an application record need beyond company / job title / status / dates / link?
-- Where the "master experience data" lives — structured DB rows vs. one long-form document the AI reads from
+Resolved:
+- ~~Exact CRM schema~~ — SCHEMA.md, validated against the Prisma CLI.
+- ~~Where the master experience data lives~~ — structured rows (`ExperienceEntry`), not one long document. The library screen filters by kind and counts usage per entry, neither of which works against prose.
+- ~~Theme scope~~ — dark and light together.
+
+Still open:
+- **The auth mechanism.** Agreed that it must exist before real data; the *how* is unpicked. A single password checked in middleware needs no tables and no dependency; Auth.js is the conventional answer and worth more on a CV. Decide before building Phase 7's write paths, since it determines whether there is a session to attribute anything to.
+- **Deployment of the first real migration.** The pipeline runs `prisma migrate deploy` automatically, so replacing the placeholder `Application` model will drop the table on the next push. It is empty, so nothing is lost — but worth doing deliberately rather than noticing afterwards.
 
 ## Cost notes
 
