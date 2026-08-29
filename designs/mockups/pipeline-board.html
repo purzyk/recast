@@ -1,0 +1,620 @@
+<title>Recast Pipeline Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   PAGE CHROME  (--p-*)  -- theme-aware, deliberately quiet.
+   The mockups below are theme-locked and own the product tokens.
+   ============================================================ */
+:root{
+  --p-bg:#F4F6F7; --p-surface:#FFFFFF; --p-border:#D8DEE3; --p-rule:#E7EBEE;
+  --p-text:#131820; --p-muted:#5D6B78; --p-accent:#9A5B06;
+  --p-sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --p-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --p-bg:#0E1216; --p-surface:#161C22; --p-border:#262F38; --p-rule:#1E262E;
+    --p-text:#E6EBEF; --p-muted:#8896A3; --p-accent:#E2A03F;
+  }
+}
+:root[data-theme="dark"]{
+  --p-bg:#0E1216; --p-surface:#161C22; --p-border:#262F38; --p-rule:#1E262E;
+  --p-text:#E6EBEF; --p-muted:#8896A3; --p-accent:#E2A03F;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--p-bg); color:var(--p-text);
+  font-family:var(--p-sans); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.pg{max-width:1180px; margin:0 auto; padding:56px 24px 96px; display:flex; flex-direction:column; gap:56px}
+
+.pg-eyebrow{
+  font-family:var(--p-mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--p-muted); margin:0 0 12px;
+}
+.pg-head h1{
+  font-size:34px; line-height:1.1; font-weight:600; letter-spacing:-.02em; margin:0 0 14px;
+  text-wrap:balance;
+}
+.pg-head p{margin:0; max-width:62ch; color:var(--p-muted); font-size:15px}
+.pg-head p strong{color:var(--p-text); font-weight:500}
+
+.pg-sec{display:flex; flex-direction:column; gap:16px}
+.pg-sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap}
+.pg-sec h2{
+  font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  margin:0; font-family:var(--p-mono);
+}
+.pg-cap{font-size:13px; color:var(--p-muted); margin:0; max-width:70ch}
+.pg-cap code{font-family:var(--p-mono); font-size:12px; color:var(--p-text)}
+
+.pg-btn{
+  font-family:var(--p-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  background:transparent; color:var(--p-muted); border:1px solid var(--p-border);
+  border-radius:3px; padding:5px 9px; cursor:pointer;
+}
+.pg-btn:hover{color:var(--p-text); border-color:var(--p-muted)}
+.pg-btn[aria-pressed="true"]{color:var(--p-accent); border-color:var(--p-accent)}
+
+.pg-frame{
+  position:relative; overflow:hidden; border:1px solid var(--p-border); border-radius:6px;
+  background:var(--p-surface);
+}
+.pg-frame.is-actual{overflow-x:auto; overflow-y:hidden}
+.pg-frame .mock{transform-origin:top left}
+
+/* ---- reference sheet ---- */
+.ref{border:1px solid var(--p-border); border-radius:6px; overflow:hidden; background:var(--p-surface)}
+.ref-row{
+  display:grid; align-items:center; gap:16px;
+  padding:10px 16px; border-top:1px solid var(--p-rule);
+}
+.ref-row:first-child{border-top:0}
+.ref-head{
+  background:transparent; font-family:var(--p-mono); font-size:10px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--p-muted); padding-top:12px; padding-bottom:12px;
+}
+.cols-color{grid-template-columns:184px 1fr 1fr 1.3fr}
+.cols-status{grid-template-columns:150px 1fr 1fr 1.5fr}
+.cols-space{grid-template-columns:110px 64px 1fr}
+.cols-type{grid-template-columns:130px 168px 1fr}
+.tok{font-family:var(--p-mono); font-size:12px; color:var(--p-text)}
+.note{font-size:13px; color:var(--p-muted)}
+.swatch{display:flex; align-items:center; gap:9px; font-family:var(--p-mono); font-size:12px; color:var(--p-muted)}
+.chip{width:22px; height:22px; border-radius:3px; border:1px solid rgba(128,140,152,.35); flex:none}
+.bar{height:10px; background:var(--p-accent); border-radius:2px; opacity:.85}
+.spec{color:var(--p-text); line-height:1.2; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+.radii{display:flex; gap:16px; flex-wrap:wrap}
+.radii div{
+  border:1px solid var(--p-border); background:var(--p-bg); padding:14px 16px;
+  font-family:var(--p-mono); font-size:11px; color:var(--p-muted);
+}
+
+.pg-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:0;
+  border:1px solid var(--p-border); border-radius:6px; overflow:hidden; background:var(--p-surface)}
+.pg-list li{display:grid; grid-template-columns:26px 1fr; gap:14px; padding:12px 16px; border-top:1px solid var(--p-rule); font-size:14px}
+.pg-list li:first-child{border-top:0}
+.pg-list b{font-family:var(--p-mono); font-size:11px; color:var(--p-accent); font-weight:500; padding-top:2px}
+.pg-list span strong{font-weight:600}
+.pg-list span em{font-style:normal; color:var(--p-muted)}
+
+pre{
+  margin:0; padding:18px 20px; overflow-x:auto; background:var(--p-surface);
+  border:1px solid var(--p-border); border-radius:6px;
+  font-family:var(--p-mono); font-size:12px; line-height:1.7; color:var(--p-text);
+}
+pre .c{color:var(--p-muted)}
+
+:focus-visible{outline:2px solid var(--p-accent); outline-offset:2px}
+
+/* ============================================================
+   THE PRODUCT  -- token definitions live on .mock, so the two
+   frames below are the same markup with one palette swapped.
+   ============================================================ */
+.mock{
+  /* scale */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:40px;
+  --r-sm:3px; --r-md:5px; --bw:1px;
+  --fs-micro:10px; --fs-meta:11px; --fs-small:12px; --fs-body:13px;
+  --fs-h3:15px; --fs-h2:18px; --fs-h1:22px;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.mock.dark{
+  --bg:#0E1216; --surface:#161C22; --surface-hi:#1D262E;
+  --border:#262F38; --border-strong:#3E4B5A;
+  --text:#E6EBEF; --muted:#8896A3; --accent:#E2A03F; --accent-ink:#0E1216;
+  --st-saved:#6E7C8C; --st-applied:#5FA0E6; --st-interview:#C093F0;
+  --st-offer:#63D6A2; --st-rejected:#C86F63;
+}
+.mock.light{
+  --bg:#F4F6F7; --surface:#FFFFFF; --surface-hi:#EDF1F3;
+  --border:#D8DEE3; --border-strong:#BFC9D2;
+  --text:#131820; --muted:#5D6B78; --accent:#A86205; --accent-ink:#FFFFFF;
+  --st-saved:#4C5A69; --st-applied:#2B6CBA; --st-interview:#6739A4;
+  --st-offer:#106C4B; --st-rejected:#AC4338;
+}
+
+/* ---- top bar ---- */
+.mk-bar{
+  flex:none; height:52px; display:flex; align-items:center; gap:var(--s4);
+  padding:0 var(--s5); border-bottom:var(--bw) solid var(--border);
+}
+.mk-brand{font-size:var(--fs-h3); font-weight:600; letter-spacing:-.015em}
+.mk-div{width:1px; height:18px; background:var(--border)}
+.mk-tally{font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted); font-variant-numeric:tabular-nums}
+.mk-bar-right{margin-left:auto; display:flex; align-items:center; gap:var(--s2)}
+.mk-search{position:relative; display:flex; align-items:center}
+.mk-search svg{position:absolute; left:8px; color:var(--muted); pointer-events:none}
+.mk-input{
+  width:230px; height:28px; padding:0 30px 0 26px;
+  background:var(--surface); border:var(--bw) solid var(--border); border-radius:var(--r-sm);
+  color:var(--text); font-family:var(--mono); font-size:var(--fs-meta);
+}
+.mk-input::placeholder{color:var(--muted)}
+.mk-input:focus{outline:none; border-color:var(--accent)}
+.mk-kbd{
+  position:absolute; right:6px; font-family:var(--mono); font-size:var(--fs-micro); color:var(--muted);
+  border:var(--bw) solid var(--border); border-radius:2px; padding:1px 4px; line-height:1.3; pointer-events:none;
+}
+.mk-ghost{
+  height:28px; padding:0 10px; background:transparent; color:var(--muted); cursor:pointer;
+  border:var(--bw) solid var(--border); border-radius:var(--r-sm);
+  font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase;
+}
+.mk-ghost:hover{color:var(--text)}
+.mk-primary{
+  height:28px; padding:0 12px; background:var(--accent); color:var(--accent-ink); cursor:pointer;
+  border:var(--bw) solid var(--accent); border-radius:var(--r-sm);
+  font-family:var(--sans); font-size:var(--fs-small); font-weight:600;
+}
+.mk-primary:hover{filter:brightness(1.07)}
+
+/* ---- board ---- */
+.mk-board{flex:1; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); min-height:0}
+.mk-col{border-right:var(--bw) solid var(--border); display:flex; flex-direction:column; min-width:0}
+.mk-col:last-child{border-right:0}
+.mk-colhead{
+  flex:none; height:38px; padding:0 var(--s3); display:flex; align-items:center; gap:var(--s2);
+  border-bottom:var(--bw) solid var(--border);
+}
+.mk-colhead .glyph{color:var(--stat); flex:none; display:flex}
+.mk-colname{font-size:var(--fs-small); font-weight:600; letter-spacing:.01em}
+.mk-count{
+  margin-left:auto; font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.mk-rule{flex:none; height:2px; background:var(--stat)}
+.mk-stack{flex:1; padding:var(--s3); display:flex; flex-direction:column; gap:var(--s2); min-height:0; overflow:hidden}
+
+/* ---- card ---- */
+.mk-stack{list-style:none; margin:0}
+.mk-card{
+  display:flex; background:var(--surface); border:var(--bw) solid var(--border-strong);
+  border-radius:var(--r-md); overflow:hidden; cursor:pointer;
+  color:inherit; text-decoration:none;
+  transition:border-color .12s linear, background-color .12s linear;
+}
+.mock :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+.mk-card .spine{width:2px; flex:none; background:var(--stat); opacity:.65; transition:opacity .12s linear}
+.mk-card-body{flex:1; min-width:0; padding:var(--s2) var(--s3) 9px}
+.mk-card-top{display:flex; align-items:flex-start; gap:var(--s2)}
+.mk-co{font-size:var(--fs-body); font-weight:600; letter-spacing:-.005em; margin:0; line-height:1.3; min-width:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.mk-ext{margin-left:auto; color:var(--muted); opacity:.55; flex:none; display:flex; padding-top:2px; transition:opacity .12s linear}
+.mk-role{
+  margin:1px 0 0; font-size:var(--fs-small); color:var(--muted); line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.mk-date{
+  margin:var(--s2) 0 0; font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted);
+  font-variant-numeric:tabular-nums; letter-spacing:-.01em;
+}
+.mk-card:hover,.mk-card:focus-visible,.mk-card.is-hover{background:var(--surface-hi); border-color:var(--stat)}
+.mk-card:hover .spine,.mk-card:focus-visible .spine,.mk-card.is-hover .spine{opacity:1}
+.mk-card:hover .mk-ext,.mk-card:focus-visible .mk-ext,.mk-card.is-hover .mk-ext{opacity:1; color:var(--text)}
+
+/* ---- empty ---- */
+.mk-empty{
+  flex:none; border:var(--bw) dashed var(--border); border-radius:var(--r-md);
+  padding:var(--s4) var(--s3); text-align:center;
+}
+.mk-empty p{margin:0; font-size:var(--fs-small); color:var(--muted)}
+.mk-empty p + p{margin-top:var(--s1); font-family:var(--mono); font-size:var(--fs-meta); opacity:.75}
+
+/* ---- 1100px variant: what gives first ---- */
+.mock.is-narrow .mk-bar{padding:0 var(--s4); gap:var(--s3)}
+.mock.is-narrow .mk-div,.mock.is-narrow .mk-tally{display:none}
+.mock.is-narrow .mk-input{width:32px; padding:0 0 0 26px; color:transparent}
+.mock.is-narrow .mk-input::placeholder{color:transparent}
+.mock.is-narrow .mk-kbd{display:none}
+.mock.is-narrow .mk-stack{padding:var(--s2)}
+.mock.is-narrow .mk-card-body{padding:7px var(--s2) 8px}
+.mock.is-narrow .mk-role{-webkit-line-clamp:1; white-space:nowrap}
+.mock.is-narrow .mk-colhead{padding:0 var(--s2)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important}
+}
+</style>
+
+<main class="pg">
+
+  <header class="pg-head">
+    <p class="pg-eyebrow">Recast &#183; design pass &#183; August 2026</p>
+    <h1>A pipeline board built like a ledger</h1>
+    <p>Five status columns, eleven applications, one job: never apply to the same posting twice.
+    The board is the vehicle for the token set &#8212; <strong>both frames below are the same markup with one
+    palette swapped</strong>, so anything that survives the swap is a token and anything that doesn't is a bug.
+    Dark is primary.</p>
+  </header>
+
+  <!-- ============ DARK ============ -->
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>01 &#8212; Dark, 1440px</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">The Nomagic card is pinned in its hover state; every other card is live, so hover
+      anywhere. Dates are time-in-column &#8212; how long a card has sat where it sits. The <code>&#8599;</code> mark
+      appears only when a posting link was saved: Brainly and Tidio have none, which is what makes the
+      mark worth reading.</p>
+    <div class="pg-frame" data-frame="dark"></div>
+  </section>
+
+  <!-- ============ LIGHT ============ -->
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>02 &#8212; Light, 1440px</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">Status hues darken rather than invert &#8212; the dark-theme mint and violet land near
+      2:1 on paper-white. The accent moves the same way: white on amber <code>#E2A03F</code> is
+      2.0:1, so light gets ochre <code>#A86205</code> and the button clears 4.8:1. Everything else is
+      the swap doing its job.</p>
+    <div class="pg-frame" data-frame="light"></div>
+  </section>
+
+  <!-- ============ 1100 ============ -->
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>03 &#8212; What gives first, 1100px</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">Five columns survive to about 1080px, so the honest answer is that nothing
+      structural gives at 1100 &#8212; the columns just compress from 278px to 220px. What gives is padding
+      and metadata, in this order:</p>
+    <ol class="pg-list">
+      <li><b>1</b><span><strong>Top-bar tally drops</strong> and the search field collapses to its icon,
+        expanding on focus. <em>The primary action never collapses.</em></span></li>
+      <li><b>2</b><span><strong>Stack padding 12 &#8594; 8, card padding 8/12 &#8594; 7/8.</strong>
+        <em>One step down the spacing scale, never an off-scale value.</em></span></li>
+      <li><b>3</b><span><strong>Role titles truncate to one line</strong> with an ellipsis; the full
+        title stays on the detail view. <em>Company never truncates &#8212; it's the scan target.</em></span></li>
+      <li><b>4</b><span><strong>Below ~1040px the board scrolls inside itself</strong> at a 208px column
+        floor. <em>The board scrolls; the page never scrolls sideways.</em></span></li>
+      <li><b>5</b><span><strong>Nothing collapses columns.</strong> <em>A pipeline with a hidden stage
+        is a pipeline you stop trusting &#8212; horizontal scroll is the lesser cost.</em></span></li>
+    </ol>
+    <div class="pg-frame" data-frame="narrow"></div>
+  </section>
+
+  <!-- ============ TOKENS ============ -->
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>04 &#8212; Colour</h2></div>
+    <div class="ref">
+      <div class="ref-row ref-head cols-color"><span>Token</span><span>Dark (primary)</span><span>Light</span><span>Where it goes</span></div>
+      <div class="ref-row cols-color"><span class="tok">--bg</span>
+        <span class="swatch"><i class="chip" style="background:#0E1216"></i>#0E1216</span>
+        <span class="swatch"><i class="chip" style="background:#F4F6F7"></i>#F4F6F7</span>
+        <span class="note">Page and board ground. Cool cast, not neutral grey.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--surface</span>
+        <span class="swatch"><i class="chip" style="background:#161C22"></i>#161C22</span>
+        <span class="swatch"><i class="chip" style="background:#FFFFFF"></i>#FFFFFF</span>
+        <span class="note">Cards, inputs. The only raised plane on this screen.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--surface-hi</span>
+        <span class="swatch"><i class="chip" style="background:#1D262E"></i>#1D262E</span>
+        <span class="swatch"><i class="chip" style="background:#EDF1F3"></i>#EDF1F3</span>
+        <span class="note">Hover and selected rows. One step, never two.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--border</span>
+        <span class="swatch"><i class="chip" style="background:#262F38"></i>#262F38</span>
+        <span class="swatch"><i class="chip" style="background:#D8DEE3"></i>#D8DEE3</span>
+        <span class="note">Structural rules: column separators, the bar, table rows.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--border-strong</span>
+        <span class="swatch"><i class="chip" style="background:#3E4B5A"></i>#3E4B5A</span>
+        <span class="swatch"><i class="chip" style="background:#BFC9D2"></i>#BFC9D2</span>
+        <span class="note">Card edges only &#8212; 1.9:1 on a card where --border gave 1.3:1.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--text</span>
+        <span class="swatch"><i class="chip" style="background:#E6EBEF"></i>#E6EBEF</span>
+        <span class="swatch"><i class="chip" style="background:#131820"></i>#131820</span>
+        <span class="note">Company, role, headings. 15.7:1 dark, 16.4:1 light.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--muted</span>
+        <span class="swatch"><i class="chip" style="background:#8896A3"></i>#8896A3</span>
+        <span class="swatch"><i class="chip" style="background:#5D6B78"></i>#5D6B78</span>
+        <span class="note">Dates, counts, placeholders. 5.7:1 on a card &#8212; meta, not decoration.</span></div>
+      <div class="ref-row cols-color"><span class="tok">--accent</span>
+        <span class="swatch"><i class="chip" style="background:#E2A03F"></i>#E2A03F</span>
+        <span class="swatch"><i class="chip" style="background:#A86205"></i>#A86205</span>
+        <span class="note">One accent, three uses: primary button, focus ring, active field.</span></div>
+    </div>
+    <p class="pg-cap">The accent is amber because every other warm slot on this screen is spoken for &#8212;
+      it can't be blue (Applied), green (Offer) or red (Rejected) without the primary action reading as
+      a status. It never appears on a card at rest &#8212; the keyboard focus ring is the one exception.</p>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>05 &#8212; Status</h2></div>
+    <div class="ref">
+      <div class="ref-row ref-head cols-status"><span>Token</span><span>Dark</span><span>Light</span><span>Second cue, carried when hue fails</span></div>
+      <div class="ref-row cols-status" id="st-rows"></div>
+    </div>
+    <p class="pg-cap">Hue never works alone. Each status also owns a glyph built from one primitive &#8212;
+      a circle, opened, filled, halved, doubled or struck &#8212; so the five read apart in greyscale, at 12px,
+      and for anyone who can't separate the blue from the violet. The glyph sits in the column header;
+      the colour repeats as a 2px spine on every card in that column, at 65% until hover. Perceived
+      lightness is laddered too, and after an implementation review the light set was re-spaced to make
+      that literal: dark spans L* 51 &#8594; 78, light runs L* 35 &#8594; 45 in even ~2.5-point steps.
+      A desaturated screenshot separates all five in either theme. Light can't spread as far &#8212; the
+      4.5:1 floor caps a light value near L* 50 &#8212; so the glyph carries proportionally more there.
+      The weakest status is Applied at 4.9:1 on the page ground and 5.3:1 on a card; nothing in the set
+      sits on the threshold.</p>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>06 &#8212; Spacing, type, borders</h2></div>
+    <div class="ref" id="space-ref"></div>
+    <div class="ref" id="type-ref"></div>
+    <div class="ref">
+      <div class="ref-row ref-head cols-space" style="grid-template-columns:1fr"><span>Radii and borders</span></div>
+      <div class="ref-row" style="grid-template-columns:1fr">
+        <div class="radii">
+          <div style="border-radius:3px">--r-sm &#183; 3px &#8212; buttons, inputs, chips</div>
+          <div style="border-radius:5px">--r-md &#183; 5px &#8212; cards, empty states</div>
+          <div style="border-radius:0">--bw &#183; 1px &#8212; one width, one colour, no shadows anywhere</div>
+        </div>
+      </div>
+    </div>
+    <p class="pg-cap">Two radii, one border width, zero shadows. Depth is done with
+      <code>--surface</code> against <code>--bg</code> and a hairline &#8212; which is why the whole thing
+      survives the theme swap without a second set of shadow tokens.</p>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>07 &#8212; Copy into theme.css.ts</h2></div>
+    <p class="pg-cap">Flat names, no nesting deeper than one level &#8212; they map straight onto
+      <code>createGlobalTheme</code> contracts.</p>
+    <pre id="code"></pre>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>08 &#8212; The one risk</h2></div>
+    <p class="pg-cap">Columns are fields on a ruled sheet, not floating panels. There are no gutters and
+      no column backgrounds &#8212; just full-height hairlines and a 2px status rule under each header. It buys
+      about 90px of usable card width over the standard tinted-panel kanban and it makes an empty column
+      read as an empty field rather than a broken container, which is exactly the problem the Offer
+      column has. The cost: the board looks less like Trello, so cards must carry their own borders to
+      stay legible as objects. That's the trade &#8212; and the review caught where it bites: at
+      <code>--border</code> the card edge was a 1.3:1 separation from the card face, fine on a good
+      monitor and liable to vanish on a cheap panel or in daylight. Card edges now carry their own
+      <code>--border-strong</code> at 1.9:1 while the structural rules stay quiet. If it still fails on a
+      second display, the next lever is tinting column headers to <code>--surface</code>, not adding
+      gutters.</p>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>09 &#8212; Handoff notes</h2></div>
+    <p class="pg-cap">Decisions from the implementation review, recorded here so the design and the build
+      don't drift apart:</p>
+    <ol class="pg-list">
+      <li><b>1</b><span><strong>Status is <code>styleVariants</code>, not a CSS variable.</strong>
+        The mock sets <code>--stat</code> inline and reads it in children because it is one HTML file.
+        The status set is closed and known at build time, so precompile all five and keep it zero-runtime.
+        <em>No inline style attributes in the real thing.</em></span></li>
+      <li><b>2</b><span><strong>Fonts via <code>next/font/google</code>, not a stylesheet link.</strong>
+        Self-hosted, no render-blocking request, no swap flash.
+        <em>The same flash that had to be trimmed out of the portfolio walkthroughs.</em></span></li>
+      <li><b>3</b><span><strong>Theme needs a pre-hydration inline script.</strong>
+        <code>createThemeContract</code> plus two <code>createTheme</code> calls gives two class names to
+        swap on <code>&lt;html&gt;</code>; applying that from React paints the wrong theme first.
+        <em>Read the preference before hydration.</em></span></li>
+      <li><b>4</b><span><strong><code>.is-narrow</code> is a demo device.</strong> It exists so both widths
+        render on one page. <em>Ship it as a media query at the stated breakpoints.</em></span></li>
+      <li><b>5</b><span><strong>Keep <code>tabular-nums</code> on counts and dates.</strong>
+        <em>Without it the column counts jitter as they change.</em></span></li>
+      <li><b>6</b><span><strong>Cards in the frames above are now links, not <code>&lt;article&gt;</code>.</strong>
+        Keyboard reachable with a 2px accent focus ring; stacks are <code>&lt;ul&gt;/&lt;li&gt;</code> so
+        position and count are announced; the <code>&#8599;</code> mark carries visually-hidden text instead
+        of a <code>title</code>; counts read &#8220;3 applications&#8221;.
+        <em>Tab through the dark frame to check.</em></span></li>
+    </ol>
+  </section>
+
+</main>
+
+<script>
+const DATA = [
+  {key:"saved", label:"Saved", cards:[
+    {co:"Allegro", role:"Senior Frontend Developer", date:"2d ago", link:true},
+    {co:"Brainly", role:"React Developer", date:"4d ago", link:false},
+    {co:"Netguru", role:"Frontend Engineer", date:"1w ago", link:true}
+  ]},
+  {key:"applied", label:"Applied", cards:[
+    {co:"Sunscrapers", role:"Senior React Developer", date:"3d ago", link:true},
+    {co:"Vercel", role:"Frontend Engineer", date:"5d ago", link:true},
+    {co:"Docplanner", role:"Senior Frontend Engineer", date:"1w ago", link:true},
+    {co:"Ramp", role:"Product Engineer", date:"2w ago", link:true}
+  ]},
+  {key:"interview", label:"Interview", cards:[
+    {co:"Nomagic", role:"Senior Frontend Developer", date:"yesterday", link:true, hover:true},
+    {co:"Packhelp", role:"Frontend Engineer", date:"4d ago", link:true}
+  ]},
+  {key:"offer", label:"Offer", cards:[]},
+  {key:"rejected", label:"Rejected", cards:[
+    {co:"Booksy", role:"Senior Frontend Engineer", date:"1w ago", link:true},
+    {co:"Tidio", role:"React Engineer", date:"3w ago", link:false}
+  ]}
+];
+
+const GLYPH = {
+  saved:'<circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+  applied:'<circle cx="7" cy="7" r="4.2" fill="currentColor"/>',
+  interview:'<circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.8a4.2 4.2 0 0 1 0 8.4z" fill="currentColor"/>',
+  offer:'<circle cx="7" cy="7" r="5.3" fill="none" stroke="currentColor" stroke-width="1.1"/><circle cx="7" cy="7" r="2.5" fill="currentColor"/>',
+  rejected:'<circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 10 10 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'
+};
+const glyph = k => '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">'+GLYPH[k]+'</svg>';
+const EXT = '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2.6 7.4 7.4 2.6M4.2 2.6h3.2v3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const SEARCH = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="5.2" cy="5.2" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M7.8 7.8 10.4 10.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+
+function card(c, key){
+  return '<li><a class="mk-card'+(c.hover?' is-hover':'')+'" href="#" style="--stat:var(--st-'+key+')">'
+    + '<span class="spine"></span><div class="mk-card-body">'
+    + '<div class="mk-card-top"><span class="mk-co">'+c.co+'</span>'
+    + (c.link?'<span class="mk-ext">'+EXT+'<span class="sr-only">Posting link saved</span></span>':'')
+    + '</div><p class="mk-role">'+c.role+'</p><p class="mk-date">'+c.date+'</p>'
+    + '</div></a></li>';
+}
+
+function board(theme, narrow){
+  const w = narrow ? 1100 : 1440, h = narrow ? 470 : 580;
+  const cols = DATA.map(col => {
+    const body = col.cards.length
+      ? col.cards.map(c => card(c, col.key)).join('')
+      : '<div class="mk-empty"><p>No offers yet</p><p>Cards land here when one comes in</p></div>';
+    const stack = col.cards.length
+      ? '<ul class="mk-stack">'+body+'</ul>'
+      : '<div class="mk-stack">'+body+'</div>';
+    return '<section class="mk-col" aria-label="'+col.label+'" style="--stat:var(--st-'+col.key+')">'
+      + '<header class="mk-colhead"><span class="glyph">'+glyph(col.key)+'</span>'
+      + '<span class="mk-colname">'+col.label+'</span>'
+      + '<span class="mk-count">'+col.cards.length
+      + '<span class="sr-only"> applications</span></span></header>'
+      + '<div class="mk-rule"></div>'
+      + stack+'</section>';
+  }).join('');
+
+  return '<div class="mock '+theme+(narrow?' is-narrow':'')+'" data-w="'+w+'" data-h="'+h+'" '
+    + 'style="width:'+w+'px;height:'+h+'px">'
+    + '<div class="mk-bar"><span class="mk-brand">Recast</span><span class="mk-div"></span>'
+    + '<span class="mk-tally">11 tracked &#183; 9 open</span>'
+    + '<div class="mk-bar-right">'
+    + '<div class="mk-search">'+SEARCH+'<input class="mk-input" type="search" placeholder="Search company or role" aria-label="Search company or role"><span class="mk-kbd">/</span></div>'
+    + '<button class="mk-ghost">'+(theme==='dark'?'Dark':'Light')+'</button>'
+    + '<button class="mk-primary">Add application</button>'
+    + '</div></div>'
+    + '<div class="mk-board">'+cols+'</div></div>';
+}
+
+document.querySelector('[data-frame="dark"]').innerHTML = board('dark', false);
+document.querySelector('[data-frame="light"]').innerHTML = board('light', false);
+document.querySelector('[data-frame="narrow"]').innerHTML = board('dark', true);
+
+/* ---- status reference rows ---- */
+const ST = [
+  ["saved","Saved","#6E7C8C","#4C5A69","Open ring &#8212; nothing committed yet"],
+  ["applied","Applied","#5FA0E6","#2B6CBA","Filled &#8212; the application is out"],
+  ["interview","Interview","#C093F0","#6739A4","Half-filled &#8212; in progress, both sides deciding"],
+  ["offer","Offer","#63D6A2","#106C4B","Ringed &#8212; the only status with an outer mark"],
+  ["rejected","Rejected","#C86F63","#AC4338","Struck through &#8212; closed, kept for the duplicate check"]
+];
+document.getElementById('st-rows').outerHTML = ST.map(([k,label,d,l,note]) =>
+  '<div class="ref-row cols-status"><span class="tok" style="display:flex;align-items:center;gap:9px">'
+  + '<span style="color:'+d+';display:flex">'+glyph(k)+'</span>--st-'+k+'</span>'
+  + '<span class="swatch"><i class="chip" style="background:'+d+'"></i>'+d+'</span>'
+  + '<span class="swatch"><i class="chip" style="background:'+l+'"></i>'+l+'</span>'
+  + '<span class="note">'+note+'</span></div>'
+).join('');
+
+/* ---- spacing + type reference ---- */
+const SPACE = [["--s1","4px","Icon-to-label, tightest legal gap"],["--s2","8px","Card to card, inside a card"],
+  ["--s3","12px","Column padding, card side padding"],["--s4","16px","Bar groups, empty-state padding"],
+  ["--s5","24px","Board edge inset"],["--s6","40px","Section breaks on longer screens"]];
+document.getElementById('space-ref').innerHTML =
+  '<div class="ref-row ref-head cols-space"><span>Spacing</span><span>Value</span><span>Used for (bar shown at 2&#215;)</span></div>'
+  + SPACE.map(([t,v,u]) => '<div class="ref-row cols-space"><span class="tok">'+t+'</span>'
+    + '<span class="tok" style="color:var(--p-muted)">'+v+'</span>'
+    + '<span style="display:grid;grid-template-columns:'+parseInt(v)*2+'px 1fr;gap:14px;align-items:center">'
+    + '<i class="bar"></i><span class="note">'+u+'</span></span></div>').join('');
+
+const TYPE = [
+  ["--fs-h1","22 / 600 sans","Screen titles",'font:600 22px/1.2 var(--p-sans);letter-spacing:-.02em'],
+  ["--fs-h2","18 / 600 sans","Section titles",'font:600 18px/1.3 var(--p-sans)'],
+  ["--fs-h3","15 / 600 sans","Wordmark, panel titles",'font:600 15px/1.3 var(--p-sans)'],
+  ["--fs-body","13 / 600 sans","Company name &#8212; the scan target",'font:600 13px/1.3 var(--p-sans)'],
+  ["--fs-small","12 / 400 sans","Role title, buttons",'font:400 12px/1.35 var(--p-sans);color:var(--p-muted)'],
+  ["--fs-meta","11 / 400 mono","Dates, counts, search",'font:400 11px/1.4 var(--p-mono);color:var(--p-muted)'],
+  ["--fs-micro","10 / 500 mono","Uppercase labels, kbd hints",'font:500 10px/1.4 var(--p-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--p-muted)']
+];
+document.getElementById('type-ref').innerHTML =
+  '<div class="ref-row ref-head cols-type"><span>Type</span><span>Size / weight / face</span><span>Specimen</span></div>'
+  + TYPE.map(([t,d,u,css]) => '<div class="ref-row cols-type"><span class="tok">'+t+'</span>'
+    + '<span class="note">'+d+' &#8212; '+u+'</span>'
+    + '<span class="spec" style="'+css+'">Senior Frontend Developer &#183; Docplanner &#183; 1w ago</span></div>').join('');
+
+/* ---- token dump ---- */
+document.getElementById('code').innerHTML =
+`<span class="c">/* Recast &#8212; v1 tokens. Dark is primary; light is the same contract. */</span>
+<span class="c">/* ground + ink */</span>
+--bg           #0E1216   <span class="c">/ light</span>  #F4F6F7
+--surface      #161C22   <span class="c">/ light</span>  #FFFFFF
+--surface-hi   #1D262E   <span class="c">/ light</span>  #EDF1F3
+--border       #262F38   <span class="c">/ light</span>  #D8DEE3
+--border-strong #3E4B5A   <span class="c">/ light</span>  #BFC9D2
+--text         #E6EBEF   <span class="c">/ light</span>  #131820
+--muted        #8896A3   <span class="c">/ light</span>  #5D6B78
+--accent       #E2A03F   <span class="c">/ light</span>  #A86205
+--accent-ink   #0E1216   <span class="c">/ light</span>  #FFFFFF
+
+<span class="c">/* status &#8212; always paired with its glyph, never hue alone */</span>
+--st-saved     #6E7C8C   <span class="c">/ light</span>  #4C5A69
+--st-applied   #5FA0E6   <span class="c">/ light</span>  #2B6CBA
+--st-interview #C093F0   <span class="c">/ light</span>  #6739A4
+--st-offer     #63D6A2   <span class="c">/ light</span>  #106C4B
+--st-rejected  #C86F63   <span class="c">/ light</span>  #AC4338
+
+<span class="c">/* scale &#8212; 12 added to the 4/8/16/24/40 placeholder; the board needs it */</span>
+--s1 4px   --s2 8px   --s3 12px   --s4 16px   --s5 24px   --s6 40px
+
+<span class="c">/* type &#8212; Archivo for content, IBM Plex Mono for anything countable */</span>
+--fs-micro 10px   --fs-meta 11px   --fs-small 12px   --fs-body 13px
+--fs-h3 15px      --fs-h2 18px     --fs-h1 22px
+
+<span class="c">/* shape */</span>
+--r-sm 3px   --r-md 5px   --bw 1px   <span class="c">/* no shadow tokens, by design */</span>`;
+
+/* ---- fit frames to the reading column ---- */
+function fit(){
+  document.querySelectorAll('.pg-frame').forEach(f => {
+    const m = f.querySelector('.mock'); if(!m) return;
+    if(f.classList.contains('is-actual')){ m.style.transform='none'; m.style.marginLeft='0'; f.style.height=m.dataset.h+'px'; return; }
+    const s = Math.min(1, f.clientWidth / +m.dataset.w);
+    m.style.transform = 'scale('+s+')';
+    m.style.marginLeft = Math.max(0, (f.clientWidth - m.dataset.w * s) / 2)+'px';
+    f.style.height = Math.round(+m.dataset.h * s)+'px';
+  });
+}
+document.querySelectorAll('[data-fit]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const f = btn.closest('.pg-sec').querySelector('.pg-frame');
+    const on = f.classList.toggle('is-actual');
+    btn.setAttribute('aria-pressed', String(on));
+    btn.textContent = on ? 'Fit to width' : 'Actual size';
+    fit();
+  });
+});
+window.addEventListener('resize', fit);
+document.fonts && document.fonts.ready.then(fit);
+fit();
+</script>

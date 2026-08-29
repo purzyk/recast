@@ -1,0 +1,735 @@
+<title>Recast Screens &amp; Components</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   PAGE CHROME (--p-*) -- same as the board sheet.
+   ============================================================ */
+:root{
+  --p-bg:#F4F6F7; --p-surface:#FFFFFF; --p-border:#D8DEE3; --p-rule:#E7EBEE;
+  --p-text:#131820; --p-muted:#5D6B78; --p-accent:#9A5B06;
+  --p-sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --p-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --p-bg:#0E1216; --p-surface:#161C22; --p-border:#262F38; --p-rule:#1E262E;
+    --p-text:#E6EBEF; --p-muted:#8896A3; --p-accent:#E2A03F;
+  }
+}
+:root[data-theme="dark"]{
+  --p-bg:#0E1216; --p-surface:#161C22; --p-border:#262F38; --p-rule:#1E262E;
+  --p-text:#E6EBEF; --p-muted:#8896A3; --p-accent:#E2A03F;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--p-bg); color:var(--p-text);
+  font-family:var(--p-sans); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased}
+.pg{max-width:1180px; margin:0 auto; padding:56px 24px 96px; display:flex; flex-direction:column; gap:56px}
+.pg-eyebrow{font-family:var(--p-mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--p-muted); margin:0 0 12px}
+.pg-head h1{font-size:34px; line-height:1.1; font-weight:600; letter-spacing:-.02em; margin:0 0 14px; text-wrap:balance}
+.pg-head p{margin:0; max-width:62ch; color:var(--p-muted); font-size:15px}
+.pg-head p strong{color:var(--p-text); font-weight:500}
+.pg-sec{display:flex; flex-direction:column; gap:16px}
+.pg-sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap}
+.pg-sec h2{font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin:0; font-family:var(--p-mono)}
+.pg-cap{font-size:13px; color:var(--p-muted); margin:0; max-width:72ch}
+.pg-cap code{font-family:var(--p-mono); font-size:12px; color:var(--p-text)}
+.pg-btn{font-family:var(--p-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  background:transparent; color:var(--p-muted); border:1px solid var(--p-border); border-radius:3px;
+  padding:5px 9px; cursor:pointer}
+.pg-btn:hover{color:var(--p-text); border-color:var(--p-muted)}
+.pg-btn[aria-pressed="true"]{color:var(--p-accent); border-color:var(--p-accent)}
+.pg-frame{position:relative; overflow:hidden; border:1px solid var(--p-border); border-radius:6px; background:var(--p-surface)}
+.pg-frame.is-actual{overflow-x:auto; overflow-y:hidden}
+.pg-frame .mock{transform-origin:top left}
+.pg-list{margin:0; padding:0; list-style:none; border:1px solid var(--p-border); border-radius:6px;
+  overflow:hidden; background:var(--p-surface)}
+.pg-list li{display:grid; grid-template-columns:26px 1fr; gap:14px; padding:12px 16px;
+  border-top:1px solid var(--p-rule); font-size:14px}
+.pg-list li:first-child{border-top:0}
+.pg-list b{font-family:var(--p-mono); font-size:11px; color:var(--p-accent); font-weight:500; padding-top:2px}
+.pg-list span em{font-style:normal; color:var(--p-muted)}
+pre{margin:0; padding:18px 20px; overflow-x:auto; background:var(--p-surface);
+  border:1px solid var(--p-border); border-radius:6px; font-family:var(--p-mono);
+  font-size:12px; line-height:1.7; color:var(--p-text)}
+pre .c{color:var(--p-muted)}
+:focus-visible{outline:2px solid var(--p-accent); outline-offset:2px}
+
+/* component pairs: dark | light at 1:1 */
+.pair{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.pair > .mock{border:1px solid var(--p-border); border-radius:6px; padding:20px; overflow:hidden}
+.pair-label{font-family:var(--p-mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--p-muted); margin:28px 0 8px}
+.pair-labels{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+
+/* ============================================================
+   THE PRODUCT -- tokens carried over from the board, unchanged
+   except --danger, which the destructive button forced.
+   ============================================================ */
+.mock{
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:40px;
+  --r-sm:3px; --r-md:5px; --bw:1px;
+  --fs-micro:10px; --fs-meta:11px; --fs-small:12px; --fs-body:13px;
+  --fs-h3:15px; --fs-h2:18px; --fs-h1:22px;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-family:var(--sans); background:var(--bg); color:var(--text);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.mock.dark{
+  color-scheme:dark;
+  --bg:#0E1216; --surface:#161C22; --surface-hi:#1D262E;
+  --border:#262F38; --border-strong:#3E4B5A;
+  --text:#E6EBEF; --muted:#8896A3; --accent:#E2A03F; --accent-ink:#0E1216;
+  --st-saved:#6E7C8C; --st-applied:#5FA0E6; --st-interview:#C093F0;
+  --st-offer:#63D6A2; --st-rejected:#C86F63; --danger:#C86F63;
+}
+.mock.light{
+  color-scheme:light;
+  --bg:#F4F6F7; --surface:#FFFFFF; --surface-hi:#EDF1F3;
+  --border:#D8DEE3; --border-strong:#BFC9D2;
+  --text:#131820; --muted:#5D6B78; --accent:#A86205; --accent-ink:#FFFFFF;
+  --st-saved:#4C5A69; --st-applied:#2B6CBA; --st-interview:#6739A4;
+  --st-offer:#106C4B; --st-rejected:#AC4338; --danger:#AC4338;
+}
+.mock :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap; border:0}
+
+/* ---- app bar (shared by every screen) ---- */
+.mk-bar{flex:none; height:52px; display:flex; align-items:center; gap:var(--s4);
+  padding:0 var(--s5); border-bottom:var(--bw) solid var(--border)}
+.mk-brand{font-size:var(--fs-h3); font-weight:600; letter-spacing:-.015em}
+.mk-div{width:1px; height:18px; background:var(--border)}
+.mk-tally{font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted); font-variant-numeric:tabular-nums}
+.mk-bar-right{margin-left:auto; display:flex; align-items:center; gap:var(--s2)}
+.mk-search{position:relative; display:flex; align-items:center}
+.mk-search svg{position:absolute; left:8px; color:var(--muted); pointer-events:none}
+.mk-input{width:230px; height:28px; padding:0 30px 0 26px; background:var(--surface);
+  border:var(--bw) solid var(--border); border-radius:var(--r-sm); color:var(--text);
+  font-family:var(--mono); font-size:var(--fs-meta)}
+.mk-input::placeholder{color:var(--muted)}
+.mk-input:focus{outline:none; border-color:var(--accent)}
+.mk-kbd{position:absolute; right:6px; font-family:var(--mono); font-size:var(--fs-micro); color:var(--muted);
+  border:var(--bw) solid var(--border); border-radius:2px; padding:1px 4px; line-height:1.3; pointer-events:none}
+
+/* ---- buttons ---- */
+.btn{height:28px; padding:0 12px; border-radius:var(--r-sm); cursor:pointer; font-family:var(--sans);
+  font-size:var(--fs-small); font-weight:600; border:var(--bw) solid transparent; display:inline-flex;
+  align-items:center; gap:6px; white-space:nowrap}
+.btn-primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.btn-primary:hover{filter:brightness(1.07)}
+.btn-secondary{background:transparent; color:var(--text); border-color:var(--border-strong)}
+.btn-secondary:hover{background:var(--surface-hi); border-color:var(--muted)}
+.btn-danger{background:transparent; color:var(--danger); border-color:var(--danger)}
+.btn-danger:hover{background:var(--danger); color:var(--accent-ink)}
+.btn-ghost{background:transparent; color:var(--muted); border-color:transparent}
+.btn-ghost:hover{color:var(--text); background:var(--surface-hi)}
+.btn[disabled]{opacity:.42; cursor:not-allowed; filter:none}
+.btn-lg{height:32px; padding:0 16px}
+
+/* ---- status badge ---- */
+.badge{display:inline-flex; align-items:center; gap:6px; height:20px; padding:0 8px 0 0;
+  border:var(--bw) solid var(--border); border-left:2px solid var(--stat); border-radius:var(--r-sm);
+  background:var(--surface); font-family:var(--mono); font-size:var(--fs-micro);
+  letter-spacing:.08em; text-transform:uppercase; color:var(--text)}
+.badge .glyph{color:var(--stat); display:flex; margin-left:7px}
+.badge-lg{height:24px; font-size:var(--fs-meta)}
+
+/* ---- form fields ---- */
+.field{display:flex; flex-direction:column; gap:var(--s1)}
+.field > label{font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted)}
+.ctrl{height:30px; padding:0 var(--s2); background:var(--surface); color:var(--text);
+  border:var(--bw) solid var(--border-strong); border-radius:var(--r-sm);
+  font-family:var(--sans); font-size:var(--fs-body); width:100%}
+.ctrl::placeholder{color:var(--muted)}
+.ctrl:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+textarea.ctrl{height:auto; padding:var(--s2); line-height:1.5; resize:none; font-size:var(--fs-small)}
+select.ctrl{appearance:none; background-image:none; cursor:pointer}
+.ctrl-mono{font-family:var(--mono); font-size:var(--fs-small)}
+.field-hint{font-family:var(--mono); font-size:var(--fs-micro); color:var(--muted)}
+.field-err .ctrl{border-color:var(--danger)}
+.field-err .field-hint{color:var(--danger)}
+.sel-wrap{position:relative; display:flex; align-items:center}
+.sel-wrap svg{position:absolute; right:9px; color:var(--muted); pointer-events:none}
+
+/* ---- data table ---- */
+.tbl{width:100%; border-collapse:collapse; font-size:var(--fs-body);
+  color:var(--text); font-family:var(--sans)}
+.tbl th{font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); font-weight:400; text-align:left; padding:0 var(--s3) var(--s2);
+  border-bottom:var(--bw) solid var(--border)}
+.tbl td{padding:9px var(--s3); border-bottom:var(--bw) solid var(--border); vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:var(--surface-hi)}
+.tbl .num{font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted);
+  font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+.tbl .strong{font-weight:600}
+.tbl .dim{color:var(--muted); font-size:var(--fs-small)}
+
+/* ---- empty state ---- */
+.empty{border:var(--bw) dashed var(--border); border-radius:var(--r-md); padding:var(--s5) var(--s4);
+  text-align:center; display:flex; flex-direction:column; align-items:center; gap:var(--s2)}
+.empty p{margin:0; font-size:var(--fs-small); color:var(--muted)}
+.empty .mono{font-family:var(--mono); font-size:var(--fs-meta); opacity:.8}
+.empty-quiet{padding:var(--s4) var(--s3)}
+
+/* ---- loading (the tailoring call) ---- */
+.load{border:var(--bw) solid var(--border-strong); border-radius:var(--r-md); padding:var(--s4);
+  display:flex; flex-direction:column; gap:var(--s3)}
+.load-top{display:flex; align-items:baseline; gap:var(--s2)}
+.load-title{font-size:var(--fs-body); font-weight:600}
+.load-el{margin-left:auto; font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.load-track{height:2px; background:var(--border); overflow:hidden; position:relative}
+.load-track i{position:absolute; inset:0 auto 0 0; width:38%; background:var(--accent);
+  animation:sweep 1.5s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(305%)}}
+.load-steps{display:flex; flex-direction:column; gap:5px; font-family:var(--mono); font-size:var(--fs-meta)}
+.load-steps span{color:var(--muted)}
+.load-steps .done{color:var(--muted)}
+.load-steps .now{color:var(--text)}
+.load-steps .done::before{content:"[x] "}
+.load-steps .now::before{content:"[>] "}
+.load-steps .todo::before{content:"[ ] "}
+.load-steps .todo{opacity:.55}
+@media (prefers-reduced-motion:reduce){
+  .load-track i{animation:none; width:45%}
+  *{transition:none !important}
+}
+
+/* ---- inline warning (duplicate guard) ---- */
+.warn{border:var(--bw) solid var(--border-strong); border-left:2px solid var(--accent);
+  border-radius:var(--r-sm); padding:var(--s3); display:flex; flex-direction:column; gap:var(--s2)}
+.warn-l{font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.09em;
+  text-transform:uppercase; color:var(--accent)}
+.warn p{margin:0; font-size:var(--fs-small); color:var(--muted)}
+.warn-rec{display:flex; align-items:center; gap:var(--s2); padding:var(--s2);
+  background:var(--surface); border:var(--bw) solid var(--border); border-radius:var(--r-sm);
+  border-left:2px solid var(--stat)}
+.warn-rec b{font-size:var(--fs-body); font-weight:600}
+.warn-rec span{font-size:var(--fs-small); color:var(--muted)}
+.warn-rec .num{margin-left:auto; font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted)}
+.warn-acts{display:flex; gap:var(--s2)}
+
+/* ---- screen chrome ---- */
+.s-head{flex:none; padding:var(--s4) var(--s5) var(--s3); border-bottom:var(--bw) solid var(--border);
+  display:flex; align-items:flex-end; gap:var(--s4)}
+.s-crumb{font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 var(--s1)}
+.s-crumb b{color:var(--text); font-weight:400}
+.s-title{font-size:var(--fs-h1); font-weight:600; letter-spacing:-.015em; margin:0; line-height:1.15}
+.s-sub{font-size:var(--fs-body); color:var(--muted); margin:2px 0 0}
+.s-head-right{margin-left:auto; display:flex; align-items:center; gap:var(--s2)}
+.s-body{flex:1; min-height:0; display:grid}
+.s-pane{padding:var(--s4) var(--s5); min-width:0; overflow:hidden}
+.s-pane + .s-pane{border-left:var(--bw) solid var(--border)}
+.s-label{font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 var(--s2); display:flex; align-items:center; gap:var(--s2)}
+.s-label::after{content:""; flex:1; height:1px; background:var(--border)}
+.s-foot{flex:none; padding:var(--s3) var(--s5); border-top:var(--bw) solid var(--border);
+  display:flex; align-items:center; gap:var(--s2)}
+.s-foot-right{margin-left:auto; display:flex; gap:var(--s2)}
+.prose{font-size:var(--fs-small); color:var(--muted); line-height:1.6; margin:0}
+.prose + .prose{margin-top:var(--s2)}
+.mark{color:var(--text); border-bottom:1px solid var(--st-applied)}
+
+/* status history */
+.hist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column}
+.hist li{display:grid; grid-template-columns:16px 1fr auto; gap:var(--s2); align-items:baseline;
+  padding:var(--s2) 0; position:relative}
+.hist li + li{border-top:var(--bw) solid var(--border)}
+.hist .glyph{color:var(--stat); display:flex; align-self:center}
+.hist .n{font-size:var(--fs-small)}
+.hist .d{font-family:var(--mono); font-size:var(--fs-meta); color:var(--muted); font-variant-numeric:tabular-nums}
+
+/* generated document blocks */
+.blk{border:var(--bw) solid var(--border); border-radius:var(--r-sm); padding:var(--s3);
+  display:flex; flex-direction:column; gap:6px}
+.blk + .blk{margin-top:var(--s2)}
+.blk:hover{border-color:var(--border-strong); background:var(--surface)}
+.blk-top{display:flex; align-items:baseline; gap:var(--s2)}
+.blk-l{font-family:var(--mono); font-size:var(--fs-micro); letter-spacing:.09em; text-transform:uppercase; color:var(--muted)}
+.blk-edit{margin-left:auto; font-family:var(--mono); font-size:var(--fs-micro); color:var(--muted); opacity:0}
+.blk:hover .blk-edit{opacity:1; color:var(--accent)}
+.blk p{margin:0; font-size:var(--fs-small); line-height:1.55}
+.blk ul{margin:0; padding-left:16px; font-size:var(--fs-small); line-height:1.55}
+.blk li + li{margin-top:3px}
+.src{font-family:var(--mono); font-size:var(--fs-micro); color:var(--muted); padding-top:2px;
+  border-top:var(--bw) dashed var(--border); margin-top:2px}
+.src b{color:var(--text); font-weight:400}
+.edited{font-family:var(--mono); font-size:var(--fs-micro); color:var(--accent)}
+
+/* steps */
+.steps{display:flex; align-items:center; gap:var(--s3); font-family:var(--mono);
+  font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.steps b{font-weight:400}
+.steps .on{color:var(--text)}
+.steps .on b{color:var(--accent)}
+.steps i{width:14px; height:1px; background:var(--border)}
+
+/* library rail */
+.rail{border-right:var(--bw) solid var(--border); padding:var(--s4) 0}
+.rail-i{display:flex; align-items:center; gap:var(--s2); padding:6px var(--s5); font-size:var(--fs-body);
+  color:var(--muted); cursor:pointer; border-left:2px solid transparent}
+.rail-i .n{margin-left:auto; font-family:var(--mono); font-size:var(--fs-meta); font-variant-numeric:tabular-nums}
+.rail-i:hover{background:var(--surface-hi); color:var(--text)}
+.rail-i.on{color:var(--text); border-left-color:var(--accent); background:var(--surface-hi); font-weight:600}
+</style>
+
+<main class="pg">
+
+  <header class="pg-head">
+    <p class="pg-eyebrow">Recast &#183; screens 2&#8211;6 &#183; August 2026</p>
+    <h1>The rest of the tool, from the same parts</h1>
+    <p>Five screens and nine components, all assembled from the board's token set.
+    <strong>One token was added in the whole pass</strong> &#8212; <code>--danger</code>, which the destructive
+    button forced &#8212; and it deliberately carries the same red as <code>--st-rejected</code>: this tool has
+    one red, and it means &#8220;ended badly&#8221; in both places. Components are shown in both themes;
+    screens are dark, since the palette contract is already proven.</p>
+    <p style="margin-top:14px"><a href="https://claude.ai/code/artifact/dc3a14eb-6e3e-42c7-ac35-8432607a36c3" style="font-family:var(--p-mono);font-size:12px;color:var(--p-accent)">&#8592; the pipeline board and the full token sheet</a></p>
+  </header>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>01 &#8212; Components</h2></div>
+    <p class="pg-cap">At 1:1, dark left and light right. Everything here is live &#8212; hover the table rows and
+      the document blocks, tab into the fields.</p>
+    <div id="components"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>02 &#8212; New application</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">Two panes, because the job description is 90% of the typing and the four fields around
+      it are short. The duplicate guard fires on company + role as you type and shows
+      <em>the record it matched</em> rather than a warning colour &#8212; the point isn't &#8220;careful&#8221;,
+      it's &#8220;here's what you already have, do you want that instead?&#8221;.</p>
+    <div class="pg-frame" data-frame="new"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>03 &#8212; Application detail</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">Three panes: the record, the source, the output. Status history reuses the board's
+      glyphs as a timeline &#8212; the same five marks, read vertically, so the shape of a stalled application
+      is visible without reading a single date.</p>
+    <div class="pg-frame" data-frame="detail"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>04 &#8212; Tailoring, generating</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">The call takes seconds, so the wait is narrated rather than spun: named steps that
+      tick over, an elapsed counter, and a 2px sweep on the accent. Under
+      <code>prefers-reduced-motion</code> the sweep stops and the step list carries it alone.</p>
+    <div class="pg-frame" data-frame="gen"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>05 &#8212; Tailoring, review</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">The anti-black-box screen. Every generated block names the experience entries it drew
+      from, so you can check the claim before you send it; blocks you touch are marked
+      <code>edited</code> and stop being regenerated. Phrases matched from the job description are underlined
+      in the source pane on the left.</p>
+    <div class="pg-frame" data-frame="review"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>06 &#8212; Experience library</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">Kept current, not imported once &#8212; so <code>last edited</code> is a column and
+      <code>used in</code> shows which entries are actually earning their place. Entry text here is
+      placeholder; swap it for yours.</p>
+    <div class="pg-frame" data-frame="library"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head">
+      <h2>07 &#8212; Companies</h2>
+      <button class="pg-btn" data-fit aria-pressed="false">Actual size</button>
+    </div>
+    <p class="pg-cap">The screen that answers &#8220;have I been here before?&#8221; outside the board.
+      Booksy shows two applications and one rejection &#8212; exactly the row that should stop you before you
+      apply a third time.</p>
+    <div class="pg-frame" data-frame="companies"></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>08 &#8212; What this pass added</h2></div>
+    <div class="pg-list-wrap"><ol class="pg-list">
+      <li><b>+1</b><span><strong><code>--danger</code></strong>, same value as <code>--st-rejected</code>
+        (<code>#C86F63</code> / <code>#AC4338</code>). <em>Destructive button and field errors. One red,
+        one meaning.</em></span></li>
+      <li><b>0</b><span><strong>No new spacing, radius, or type values.</strong> Every screen above is
+        4/8/12/16/24/40, 3px and 5px, and the seven type steps.
+        <em>If a screen had needed an eighth, that would have been the signal the scale was wrong.</em></span></li>
+      <li><b>&#8595;</b><span><strong><code>--border-strong</code> earned its keep.</strong> Form controls
+        and the loading panel use it too, not just cards. <em>Anything you can click or type into gets the
+        stronger edge; anything structural stays at <code>--border</code>.</em></span></li>
+      <li><b>&#8801;</b><span><strong>One app bar, one screen header, one footer pattern</strong> across all
+        five screens. <em>The 52px bar is identical to the board's, so navigation never shifts.</em></span></li>
+    </ol></div>
+  </section>
+
+  <section class="pg-sec">
+    <div class="pg-sec-head"><h2>09 &#8212; Decisions worth arguing with</h2></div>
+    <p class="pg-cap">Three places where I picked one of two defensible options, so you can overrule them
+      cheaply before they're code:</p>
+    <ol class="pg-list">
+      <li><b>1</b><span><strong>The duplicate guard warns, it doesn't block.</strong> You can still add the
+        posting. <em>A hard block would be wrong the day a company reposts a role you genuinely want to
+        re-apply for &#8212; but if you'd rather it block on an exact company + role match, that's a one-line
+        change.</em></span></li>
+      <li><b>2</b><span><strong>Generated output saves as a version, not a replacement.</strong> The detail
+        screen lists <code>CV v2</code> and <code>v1</code>. <em>Costs storage and a little UI; buys you the
+        ability to see what you actually sent after a recruiter calls.</em></span></li>
+      <li><b>3</b><span><strong>Status is changed from the detail screen's badge, not by dragging.</strong>
+        <em>The board still drags, but the detail view needs its own control, and a select that writes a
+        history entry is simpler than making the badge itself a menu.</em></span></li>
+    </ol>
+  </section>
+
+</main>
+
+<script>
+/* ---------- shared marks ---------- */
+const GLYPH = {
+  saved:'<circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+  applied:'<circle cx="7" cy="7" r="4.2" fill="currentColor"/>',
+  interview:'<circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.8a4.2 4.2 0 0 1 0 8.4z" fill="currentColor"/>',
+  offer:'<circle cx="7" cy="7" r="5.3" fill="none" stroke="currentColor" stroke-width="1.1"/><circle cx="7" cy="7" r="2.5" fill="currentColor"/>',
+  rejected:'<circle cx="7" cy="7" r="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4 10 10 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'
+};
+const glyph = k => '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">'+GLYPH[k]+'</svg>';
+const EXT = '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2.6 7.4 7.4 2.6M4.2 2.6h3.2v3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const SEARCH = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="5.2" cy="5.2" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M7.8 7.8 10.4 10.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+const CARET = '<svg width="9" height="9" viewBox="0 0 9 9" aria-hidden="true"><path d="M2 3.4 4.5 6 7 3.4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+const LABEL = {saved:'Saved', applied:'Applied', interview:'Interview', offer:'Offer', rejected:'Rejected'};
+
+const badge = (k, lg) => '<span class="badge'+(lg?' badge-lg':'')+'" style="--stat:var(--st-'+k+')">'
+  + '<span class="glyph">'+glyph(k)+'</span>'+LABEL[k]+'</span>';
+
+/* ---------- app bar, shared by every screen ---------- */
+function appbar(){
+  return '<div class="mk-bar"><span class="mk-brand">Recast</span><span class="mk-div"></span>'
+    + '<span class="mk-tally">11 tracked &#183; 9 open</span>'
+    + '<div class="mk-bar-right">'
+    + '<div class="mk-search">'+SEARCH+'<input class="mk-input" type="search" placeholder="Search company or role" aria-label="Search company or role"><span class="mk-kbd">/</span></div>'
+    + '<button class="btn btn-secondary">Add application</button></div></div>';
+}
+const head = (crumb, title, sub, right) =>
+  '<div class="s-head"><div><p class="s-crumb">'+crumb+'</p>'
+  + '<h1 class="s-title">'+title+'</h1>'+(sub?'<p class="s-sub">'+sub+'</p>':'')+'</div>'
+  + '<div class="s-head-right">'+(right||'')+'</div></div>';
+
+
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+const JD = [
+  'We are looking for a frontend engineer to work on the dashboard our customers spend their day in. '
+  + 'You will own features end to end, from the <span class="mark">TypeScript</span> data layer through to the '
+  + '<span class="mark">React</span> components, and you will be the person who says no to a dependency we do not need.',
+  'What we care about: strong <span class="mark">CSS</span> fundamentals, an eye for '
+  + '<span class="mark">accessibility</span>, and the judgement to keep a design system small. '
+  + 'We use <span class="mark">Next.js</span>, and we render as much as we can on the server.',
+  'You will work with two other engineers and a designer. The stack is boring on purpose.'
+].map(t => '<p class="prose">'+t+'</p>').join('');
+
+const C_BADGE =
+  '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">'
+  + ['saved','applied','interview','offer','rejected'].map(k=>badge(k)).join('')
+  + '</div><div style="display:flex;gap:8px;align-items:center;margin-top:12px">'
+  + badge('interview',true)+'<span style="font-family:var(--mono);font-size:10px;color:var(--muted)">badge-lg</span></div>';
+
+const C_BTN =
+  '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">'
+  + '<button class="btn btn-primary">Add application</button>'
+  + '<button class="btn btn-secondary">Save as draft</button>'
+  + '<button class="btn btn-danger">Delete</button>'
+  + '<button class="btn btn-ghost">Cancel</button></div>'
+  + '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px">'
+  + '<button class="btn btn-primary btn-lg">Save and tailor</button>'
+  + '<button class="btn btn-primary" disabled>Save and tailor</button>'
+  + '<span style="font-family:var(--mono);font-size:10px;color:var(--muted)">btn-lg &#183; disabled</span></div>';
+
+const C_FIELD =
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+  + '<div class="field"><label for="f-co">Company</label><input class="ctrl" id="f-co" value="Vercel"></div>'
+  + '<div class="field"><label for="f-st">Status</label><div class="sel-wrap">'
+  + '<select class="ctrl" id="f-st"><option>Saved</option><option selected>Applied</option></select>'+CARET+'</div></div>'
+  + '<div class="field"><label for="f-dt">Date applied</label><input class="ctrl ctrl-mono" id="f-dt" type="date" value="2026-08-24"></div>'
+  + '<div class="field field-err"><label for="f-ln">Source link</label>'
+  + '<input class="ctrl ctrl-mono" id="f-ln" value="vercel.com/careers"><span class="field-hint">Needs the full URL, including https://</span></div>'
+  + '</div><div class="field" style="margin-top:12px"><label for="f-tx">Job description</label>'
+  + '<textarea class="ctrl" id="f-tx" rows="3">We are looking for a frontend engineer to work on the dashboard our customers spend their day in.</textarea>'
+  + '<span class="field-hint">Paste the posting. The tailoring step reads this.</span></div>';
+
+const C_TBL =
+  '<table class="tbl"><thead><tr><th>Company</th><th>Latest status</th><th class="num">Apps</th><th class="num">Last</th></tr></thead>'
+  + '<tbody>'
+  + '<tr><td class="strong">Booksy</td><td>'+badge('rejected')+'</td><td class="num">2</td><td class="num">1w</td></tr>'
+  + '<tr><td class="strong">Nomagic</td><td>'+badge('interview')+'</td><td class="num">1</td><td class="num">1d</td></tr>'
+  + '<tr><td class="strong">Vercel</td><td>'+badge('applied')+'</td><td class="num">1</td><td class="num">5d</td></tr>'
+  + '</tbody></table>';
+
+const C_EMPTY =
+  '<div class="empty"><p style="font-size:13px;color:var(--text)">No applications yet</p>'
+  + '<p class="mono">The board fills up as you save postings</p>'
+  + '<button class="btn btn-primary" style="margin-top:4px">Add the first one</button></div>'
+  + '<div class="empty empty-quiet" style="margin-top:12px"><p>No offers yet</p>'
+  + '<p class="mono">Cards land here when one comes in</p></div>';
+
+const C_LOAD =
+  '<div class="load"><div class="load-top"><span class="load-title">Tailoring for Vercel</span>'
+  + '<span class="load-el">0:06</span></div>'
+  + '<div class="load-track"><i></i></div>'
+  + '<div class="load-steps"><span class="done">Reading the job description</span>'
+  + '<span class="done">Matching 30 experience entries</span>'
+  + '<span class="now">Drafting summary and bullets</span>'
+  + '<span class="todo">Checking length and tone</span></div></div>';
+
+const C_WARN =
+  '<div class="warn" style="--stat:var(--st-applied)"><span class="warn-l">Already in your pipeline</span>'
+  + '<p>You applied to this company and role before. Open that record instead of starting a second one?</p>'
+  + '<div class="warn-rec"><b>Vercel</b><span>Frontend Engineer</span>'
+  + '<span class="num">applied 5d ago</span></div>'
+  + '<div class="warn-acts"><button class="btn btn-secondary">Open the existing one</button>'
+  + '<button class="btn btn-ghost">Add anyway</button></div></div>';
+
+const COMPONENTS = [
+  ['Status badge &#8212; five states', C_BADGE],
+  ['Button &#8212; primary, secondary, destructive, ghost', C_BTN],
+  ['Form field set &#8212; text, select, date, textarea, error', C_FIELD],
+  ['Data table row', C_TBL],
+  ['Empty state &#8212; first run, and the quiet column variant', C_EMPTY],
+  ['Loading &#8212; the tailoring call', C_LOAD],
+  ['Inline warning &#8212; the duplicate guard', C_WARN]
+];
+document.getElementById('components').innerHTML = COMPONENTS.map(([n,h]) =>
+  '<p class="pair-label">'+n+'</p>'
+  + '<div class="pair"><div class="mock dark">'+h+'</div><div class="mock light">'+h+'</div></div>'
+).join('');
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+const screen = (h, inner) =>
+  '<div class="mock dark" data-w="1440" data-h="'+h+'" style="width:1440px;height:'+h+'px">'
+  + appbar() + inner + '</div>';
+
+const steps = on => '<div class="steps">'
+  + ['Source','Generate','Review','Save'].map((s,i)=>
+      '<span class="'+(i===on?'on':'')+'"><b>'+(i+1)+'</b> '+s+'</span>').join('<i></i>')
+  + '</div>';
+
+/* --- 02 New application --- */
+document.querySelector('[data-frame="new"]').innerHTML = screen(690,
+  head('Board / <b>New application</b>', 'New application', '',
+       '<button class="btn btn-ghost">Cancel</button>')
+  + '<div class="s-body" style="grid-template-columns:560px 1fr">'
+  + '<div class="s-pane"><p class="s-label">The posting</p>'
+  + '<div style="display:flex;flex-direction:column;gap:12px">'
+  + '<div class="field"><label for="n-co">Company</label><input class="ctrl" id="n-co" value="Vercel"></div>'
+  + '<div class="field"><label for="n-ro">Role title</label><input class="ctrl" id="n-ro" value="Frontend Engineer"></div>'
+  + C_WARN
+  + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+  + '<div class="field"><label for="n-st">Status</label><div class="sel-wrap">'
+  + '<select class="ctrl" id="n-st"><option selected>Saved</option><option>Applied</option></select>'+CARET+'</div></div>'
+  + '<div class="field"><label for="n-dt">Date</label><input class="ctrl ctrl-mono" id="n-dt" type="date" value="2026-08-29"></div>'
+  + '</div>'
+  + '<div class="field"><label for="n-ln">Source link</label>'
+  + '<input class="ctrl ctrl-mono" id="n-ln" value="https://vercel.com/careers/frontend-engineer">'
+  + '<span class="field-hint">Kept so you can reopen the original posting later</span></div>'
+  + '</div></div>'
+  + '<div class="s-pane"><p class="s-label">Job description</p>'
+  + '<textarea class="ctrl" rows="18" aria-label="Job description">We are looking for a frontend engineer to work on the dashboard our customers spend their day in. You will own features end to end, from the TypeScript data layer through to the React components, and you will be the person who says no to a dependency we do not need.\n\nWhat we care about: strong CSS fundamentals, an eye for accessibility, and the judgement to keep a design system small. We use Next.js, and we render as much as we can on the server.\n\nYou will work with two other engineers and a designer. The stack is boring on purpose.</textarea>'
+  + '<p class="field-hint" style="margin-top:8px">2 340 characters &#183; pasted 29 Aug</p></div>'
+  + '</div>'
+  + '<div class="s-foot"><span class="field-hint">Saved locally. Nothing leaves the machine until you tailor.</span>'
+  + '<div class="s-foot-right"><button class="btn btn-secondary">Save</button>'
+  + '<button class="btn btn-primary btn-lg">Save and tailor</button></div></div>');
+
+/* --- 03 Application detail --- */
+document.querySelector('[data-frame="detail"]').innerHTML = screen(640,
+  head('Board / <b>Vercel</b>', 'Vercel', 'Frontend Engineer',
+       badge('applied', true)
+       + '<button class="btn btn-secondary">Move to&#8230;</button>'
+       + '<button class="btn btn-secondary">Edit</button>'
+       + '<button class="btn btn-danger">Delete</button>')
+  + '<div class="s-body" style="grid-template-columns:300px 1fr 360px">'
+  + '<div class="s-pane"><p class="s-label">Record</p>'
+  + '<table class="tbl"><tbody>'
+  + '<tr><td class="dim">Applied</td><td class="num">24 Aug &#183; 5d</td></tr>'
+  + '<tr><td class="dim">Saved</td><td class="num">18 Aug &#183; 11d</td></tr>'
+  + '<tr><td class="dim">Last contact</td><td class="num">&#8212;</td></tr>'
+  + '<tr><td class="dim">Posting</td><td class="num">vercel.com '+EXT+'</td></tr>'
+  + '</tbody></table>'
+  + '<p class="s-label" style="margin-top:24px">Status history</p>'
+  + '<ul class="hist">'
+  + '<li style="--stat:var(--st-applied)"><span class="glyph">'+glyph('applied')+'</span>'
+  + '<span class="n">Applied</span><span class="d">24 Aug</span></li>'
+  + '<li style="--stat:var(--st-saved)"><span class="glyph">'+glyph('saved')+'</span>'
+  + '<span class="n">Saved</span><span class="d">18 Aug</span></li>'
+  + '</ul>'
+  + '<p class="field-hint" style="margin-top:12px">Five days in Applied. Chase at fourteen.</p></div>'
+  + '<div class="s-pane"><p class="s-label">Job description</p>'+JD
+  + '<p class="s-label" style="margin-top:24px">Notes</p>'
+  + '<p class="prose">Referred by nobody &#8212; cold application through the careers page. '
+  + 'Posting mentions server rendering twice, so lead with the Next.js work.</p>'
+  + '<div class="field" style="margin-top:12px"><label for="d-note">Add a note</label>'
+  + '<input class="ctrl" id="d-note" placeholder="What happened?"></div></div>'
+  + '<div class="s-pane"><p class="s-label">Documents</p>'
+  + '<table class="tbl"><tbody>'
+  + '<tr><td><span class="strong">CV</span> <span class="dim">v2</span></td>'
+  + '<td class="num">edited 3d '+EXT+'</td></tr>'
+  + '<tr><td><span class="strong">CV</span> <span class="dim">v1</span></td>'
+  + '<td class="num">24 Aug '+EXT+'</td></tr>'
+  + '<tr><td><span class="strong">Cover letter</span> <span class="dim">v1</span></td>'
+  + '<td class="num">24 Aug '+EXT+'</td></tr>'
+  + '</tbody></table>'
+  + '<button class="btn btn-primary btn-lg" style="margin-top:16px;width:100%;justify-content:center">Open tailoring</button>'
+  + '<p class="field-hint" style="margin-top:8px;text-align:center">Generates a new version, never overwrites v2</p>'
+  + '</div></div>');
+
+/* --- 04 Tailoring, generating --- */
+document.querySelector('[data-frame="gen"]').innerHTML = screen(560,
+  head('Board / Vercel / <b>Tailoring</b>', 'Tailoring for Vercel', 'Frontend Engineer', steps(1))
+  + '<div class="s-body" style="grid-template-columns:1fr 1fr">'
+  + '<div class="s-pane"><p class="s-label">Source &#8212; job description</p>'+JD+'</div>'
+  + '<div class="s-pane"><p class="s-label">Output</p>'+C_LOAD
+  + '<p class="field-hint" style="margin-top:12px">You can leave this screen. The draft is saved to the '
+  + 'application when it finishes.</p></div></div>'
+  + '<div class="s-foot"><button class="btn btn-ghost">Cancel</button>'
+  + '<div class="s-foot-right"><button class="btn btn-primary btn-lg" disabled>Save to application</button></div></div>');
+
+/* --- 05 Tailoring, review --- */
+const blk = (label, body, src, edited) =>
+  '<div class="blk"><div class="blk-top"><span class="blk-l">'+label+'</span>'
+  + (edited?'<span class="edited">edited</span>':'')
+  + '<span class="blk-edit">Edit</span></div>'+body
+  + '<p class="src">drawn from: <b>'+src+'</b></p></div>';
+
+document.querySelector('[data-frame="review"]').innerHTML = screen(660,
+  head('Board / Vercel / <b>Tailoring</b>', 'Tailoring for Vercel', 'Frontend Engineer', steps(2))
+  + '<div class="s-body" style="grid-template-columns:1fr 1fr">'
+  + '<div class="s-pane"><p class="s-label">Source &#8212; matched phrases underlined</p>'+JD
+  + '<p class="field-hint" style="margin-top:12px">6 of 9 requirements matched to an experience entry. '
+  + '3 unmatched: on-call, GraphQL, team leadership.</p></div>'
+  + '<div class="s-pane"><p class="s-label">Output &#8212; CV, draft v3</p>'
+  + blk('Summary',
+        '<p>Frontend developer with eight years on production interfaces, most of it in React and '
+        + 'TypeScript. Comfortable owning a feature from data layer to component, and happy to argue a '
+        + 'dependency out of the build.</p>',
+        'Freelance frontend developer &#183; React, TypeScript, Next.js', true)
+  + blk('Selected experience',
+        '<ul><li>Rebuilt a WooCommerce storefront front end; cut time to first render by more than half.</li>'
+        + '<li>Built and maintained a small design system as tokens, not a component zoo.</li>'
+        + '<li>Server-rendered the whole of purzycki.pl with Next.js, no client-side router.</li></ul>',
+        'WooCommerce storefront rebuild &#183; purzycki.pl &#183; vanilla-extract, CSS architecture')
+  + blk('Skills, ordered for this posting',
+        '<p>React &#183; TypeScript &#183; Next.js &#183; CSS architecture &#183; accessibility (WCAG AA) '
+        + '&#183; server rendering</p>',
+        'React, TypeScript, Next.js &#183; vanilla-extract, CSS architecture')
+  + '</div></div>'
+  + '<div class="s-foot"><button class="btn btn-secondary">Regenerate untouched blocks</button>'
+  + '<button class="btn btn-ghost">Discard draft</button>'
+  + '<div class="s-foot-right"><button class="btn btn-secondary">Save as draft</button>'
+  + '<button class="btn btn-primary btn-lg">Save to application</button></div></div>');
+
+/* --- 06 Experience library --- */
+const LIB = [
+  ['Freelance frontend developer','Work history','2018 &#8211; present','9','3d ago'],
+  ['Frontend developer, agency','Work history','2014 &#8211; 2018','6','2mo ago'],
+  ['purzycki.pl &#8212; portfolio and case studies','Project','2024','4','1w ago'],
+  ['WooCommerce storefront rebuild','Project','2025','2','3w ago'],
+  ['Recast &#8212; job application tracker','Project','2026','0','today'],
+  ['React, TypeScript, Next.js','Skills','&#8212;','11','3d ago'],
+  ['vanilla-extract, CSS architecture','Skills','&#8212;','5','3d ago']
+];
+document.querySelector('[data-frame="library"]').innerHTML = screen(560,
+  head('Board / <b>Experience library</b>', 'Experience library', '30 entries &#183; last edited 3 days ago',
+       '<button class="btn btn-secondary">Import from CV</button>'
+       + '<button class="btn btn-primary">Add entry</button>')
+  + '<div class="s-body" style="grid-template-columns:220px 1fr">'
+  + '<div class="rail">'
+  + [['All',30,1],['Work history',2,0],['Projects',6,0],['Skills',18,0],['Achievements',4,0]]
+      .map(([n,c,on])=>'<div class="rail-i'+(on?' on':'')+'">'+n+'<span class="n">'+c+'</span></div>').join('')
+  + '</div>'
+  + '<div class="s-pane"><table class="tbl"><thead><tr>'
+  + '<th>Entry</th><th>Kind</th><th class="num">Dates</th><th class="num">Used in</th><th class="num">Last edited</th>'
+  + '</tr></thead><tbody>'
+  + LIB.map(([e,k,d,u,l])=>'<tr><td class="strong">'+e+'</td><td class="dim">'+k+'</td>'
+      + '<td class="num">'+d+'</td><td class="num">'+u+'</td><td class="num">'+l+'</td></tr>').join('')
+  + '</tbody></table>'
+  + '<p class="field-hint" style="margin-top:12px">Entries with <b>0</b> under &#8220;used in&#8221; have never '
+  + 'made it into a tailored document. Either they need rewriting, or you are applying for the wrong jobs.</p>'
+  + '</div></div>');
+
+/* --- 07 Companies --- */
+const CO = [
+  ['Allegro','1','saved','2d ago',1],['Booksy','2','rejected','1w ago',1],['Brainly','1','saved','4d ago',0],
+  ['Docplanner','1','applied','1w ago',1],['Netguru','1','saved','1w ago',1],['Nomagic','1','interview','1d ago',1],
+  ['Packhelp','1','interview','4d ago',1],['Ramp','1','applied','2w ago',1],['Sunscrapers','1','applied','3d ago',1],
+  ['Tidio','1','rejected','3w ago',0],['Vercel','1','applied','5d ago',1]
+];
+document.querySelector('[data-frame="companies"]').innerHTML = screen(660,
+  head('Board / <b>Companies</b>', 'Companies', '11 companies &#183; 12 applications',
+       '<div class="sel-wrap"><select class="ctrl ctrl-mono" style="width:170px" aria-label="Filter by outcome">'
+       + '<option>All outcomes</option><option>Open only</option></select>'+CARET+'</div>')
+  + '<div class="s-body"><div class="s-pane">'
+  + '<table class="tbl"><thead><tr><th>Company</th><th>Latest status</th><th>Role last applied for</th>'
+  + '<th class="num">Applications</th><th class="num">Last activity</th><th class="num">Posting</th>'
+  + '</tr></thead><tbody>'
+  + CO.map(([c,n,st,when,link])=>'<tr><td class="strong">'+c+'</td><td>'+badge(st)+'</td>'
+      + '<td class="dim">'+({Allegro:'Senior Frontend Developer',Booksy:'Senior Frontend Engineer',
+          Brainly:'React Developer',Docplanner:'Senior Frontend Engineer',Netguru:'Frontend Engineer',
+          Nomagic:'Senior Frontend Developer',Packhelp:'Frontend Engineer',Ramp:'Product Engineer',
+          Sunscrapers:'Senior React Developer',Tidio:'React Engineer',Vercel:'Frontend Engineer'}[c])+'</td>'
+      + '<td class="num">'+n+'</td><td class="num">'+when+'</td>'
+      + '<td class="num">'+(link?EXT:'&#8212;')+'</td></tr>').join('')
+  + '</tbody></table>'
+  + '<p class="field-hint" style="margin-top:12px">Booksy shows <b>2</b> &#8212; one from last year, archived off '
+  + 'the board. That row is the whole reason this screen exists.</p>'
+  + '</div></div>');
+
+
+/* ---------- fit frames ---------- */
+function fit(){
+  document.querySelectorAll('.pg-frame').forEach(f=>{
+    const m=f.querySelector('.mock'); if(!m) return;
+    if(f.classList.contains('is-actual')){ m.style.transform='none'; m.style.marginLeft='0'; f.style.height=m.dataset.h+'px'; return; }
+    const s=Math.min(1, f.clientWidth / +m.dataset.w);
+    m.style.transform='scale('+s+')';
+    m.style.marginLeft=Math.max(0,(f.clientWidth-m.dataset.w*s)/2)+'px';
+    f.style.height=Math.round(+m.dataset.h*s)+'px';
+  });
+}
+document.querySelectorAll('[data-fit]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const f=btn.closest('.pg-sec').querySelector('.pg-frame');
+    const on=f.classList.toggle('is-actual');
+    btn.setAttribute('aria-pressed',String(on));
+    btn.textContent = on ? 'Fit to width' : 'Actual size';
+    fit();
+  });
+});
+window.addEventListener('resize', fit);
+document.fonts && document.fonts.ready.then(fit);
+fit();
+</script>
