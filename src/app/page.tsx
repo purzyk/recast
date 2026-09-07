@@ -1,15 +1,19 @@
+import { AppBar } from '@/components/AppBar'
+import { PipelineBoard } from '@/components/PipelineBoard'
+import { getBoard, getTally } from '@/lib/applications'
 import * as styles from './page.css'
 
-// Note: no 'use client'. This stays a Server Component — the styles compiled
-// to a static stylesheet at build time, so nothing ships to the browser to
-// make them work.
-export default function HomePage() {
+// The board reflects data that changes on every write, so it is never
+// prerendered.
+export const dynamic = 'force-dynamic'
+
+export default async function BoardPage() {
+  const [columns, tally] = await Promise.all([getBoard(), getTally()])
+
   return (
-    <main className={styles.main}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Recast</h1>
-        <p className={styles.note}>Skeleton is live.</p>
-      </div>
-    </main>
+    <div className={styles.shell}>
+      <AppBar tally={tally} />
+      <PipelineBoard columns={columns} />
+    </div>
   )
 }

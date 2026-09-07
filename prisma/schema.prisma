@@ -2,6 +2,10 @@
 // prisma.config.ts; the runtime client gets it via a driver adapter (see
 // src/lib/db.ts). Driver adapters also mean no Rust query-engine binary in the
 // image, which keeps Cloud Run cold starts down.
+//
+// The model is derived from what the designed screens display — see SCHEMA.md
+// for the reasoning, including what is deliberately derived rather than stored.
+// Document and DocumentSource land with Phase 9; nothing before then uses them.
 generator client {
   provider = "prisma-client-js"
 
@@ -22,16 +26,89 @@ enum ApplicationStatus {
   rejected
 }
 
-// Minimal for now — enough to prove migrations and queries work end to end.
-// Phase 7 designs this properly alongside companies and postings.
+enum ExperienceKind {
+  work
+  project
+  skill
+  achievement
+}
+
+model Company {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  website      String?
+  applications Application[]
+  createdAt    DateTime      @default(now())
+}
+
 model Application {
   id        Int               @id @default(autoincrement())
-  company   String
+  company   Company           @relation(fields: [companyId], references: [id])
+  companyId Int
   role      String
   status    ApplicationStatus @default(saved)
-  sourceUrl String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
 
-  @@index([status])
+  /// The posting itself. Null is meaningful: the card only shows the external
+  /// mark when this is set, which is what makes the mark worth reading.
+  sourceUrl String?
+
+  /// Pasted job description. Feeds the tailoring step in Phase 9.
+  jobDescription String?
+
+  /// Off the board, still in the companies view. Not a delete — the whole
+  /// point of the tool is remembering what you already applied for.
+  archived Boolean @default(false)
+
+  /// Set by a human contacting you, not by a status change.
+  lastContactAt DateTime?
+
+  history StatusEvent[]
+  notes   Note[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Drives the duplicate guard. Not unique — the guard warns rather than
+  /// blocks, so a genuine re-application to a reposted role must be possible.
+  @@index([companyId, role])
+  @@index([status, archived])
+}
+
+/// Append-only. Time-in-column is now() minus the newest row for an
+/// application; the detail screen's timeline is this list read in reverse.
+model StatusEvent {
+  id            Int               @id @default(autoincrement())
+  application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId Int
+  status        ApplicationStatus
+  at            DateTime          @default(now())
+
+  @@index([applicationId, at])
+}
+
+model Note {
+  id            Int         @id @default(autoincrement())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId Int
+  body          String
+  createdAt     DateTime    @default(now())
+
+  @@index([applicationId, createdAt])
+}
+
+/// The source material tailoring draws from. Kept current, not imported once.
+model ExperienceEntry {
+  id    Int            @id @default(autoincrement())
+  title String
+  kind  ExperienceKind
+
+  /// Display string, deliberately not a date range: "2018 – present" and the
+  /// "—" a skill carries are both unrepresentable as two DateTimes.
+  period String?
+  body   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kind])
 }
