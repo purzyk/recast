@@ -104,9 +104,10 @@ the screens artifact, confirmed rather than overridden):
 2. Generated output **saves as a version, never a replacement** — so what you actually sent is still readable when a recruiter calls.
 3. Status changes **from the detail screen**, not only by dragging — a select that writes a `StatusEvent` is simpler than making the badge a menu.
 
-### Phase 8 — Experience library
-- Input/store work history, projects, skills — the raw material the tailoring step will later draw from
-- Useful on its own as a structured place to keep CV source material, independent of any AI
+### Phase 8 — Experience library (done)
+- Entries with a kind (work / project / skill / achievement), a free-text period and a body. Full CRUD, filtered by kind from a rail that lists every kind even at zero, so it does not reshuffle as entries are added.
+- The design's "Used in" column ships showing a dash, not 0: usage tracking needs the Document model, which lands with Phase 9. "Never used" and "not tracked yet" are different claims and only one is true today.
+- Period is free text on purpose — "2018 – present" and the dash a skill carries are both unrepresentable as two dates.
 
 ### Phase 9 — AI tailoring (deliberately last)
 Deferred to the end because it's the only part that costs money to run: the Claude
