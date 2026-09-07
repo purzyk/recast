@@ -1,9 +1,9 @@
-# Auth — verified approach
+# Auth — implemented and live
 
-**Verdict: Auth.js v5 works with Next 16.** Built, deployed locally, and the
-protection boundary tested route by route. Not yet implemented — this is the
-recipe, written down because three of the four gotchas below cost an hour each
-to find and none of them announce themselves.
+Google sign-in, in production at recast.purzycki.pl. The boundary was tested
+route by route locally and again after deploy. The gotchas below are recorded
+because none of them announce themselves — and one of them only appears once
+deployed.
 
 ## Shape
 
@@ -16,7 +16,7 @@ Versions as tested: `next-auth@5.0.0-beta.32` against `next@16.3.3`. v5 is
 still beta after a long run; v4 is the stable tag but carries the older
 Pages-Router-era API.
 
-## The four gotchas
+## The five gotchas
 
 **1. `middleware.ts` is deprecated in Next 16 — the file is now `proxy.ts`,
 and the export must be named `proxy`.** Every Auth.js doc says
@@ -47,6 +47,14 @@ trusts the Host header automatically on Vercel. On Cloud Run every request
 fails with `UntrustedHost`, surfacing as a vague *"There was a problem with
 the server configuration"* that names nothing.
 
+**3b. `trustHost` alone is not enough on Cloud Run — `AUTH_URL` is also
+required.** With only `trustHost: true` the boundary works, but the generated
+`callbackUrl` points at `https://0.0.0.0:3000` — the container's internal bind
+address. Sign-in then succeeds and dumps you somewhere unreachable. Setting
+`AUTH_URL=https://recast.purzycki.pl` pins the canonical origin. This only
+appears once deployed; local testing cannot surface it, because locally the
+bind address *is* the right host.
+
 **4. `api/auth` must be excluded from the proxy matcher.** Google redirects to
 `/api/auth/callback/google`; if the proxy guards that path, the callback is
 bounced to sign-in, which redirects to Google, forever. Verified as a real
@@ -60,7 +68,7 @@ export const config = {
 
 ## Verified boundary
 
-With all four applied:
+Confirmed in production:
 
 | Path | Result |
 |---|---|
@@ -106,7 +114,7 @@ export const { GET, POST } = handlers
 ## Still to do when implementing
 
 - **Google Cloud console:** OAuth consent screen, then credentials. Basic `email`/`profile` scopes need no Google verification review. Redirect URIs must list **both** `https://recast.purzycki.pl/api/auth/callback/google` and the `*.run.app` URL, exactly.
-- **Secrets:** `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_ALLOWED_EMAILS` into Secret Manager alongside `database-url`, mounted the same way. Deploying the app with auth wired but the secrets absent will break the live site.
+- ~~Secrets~~ — done. Mounted with `--update-secrets`, not `--set-secrets`: the latter replaces the whole set and would silently drop `DATABASE_URL`. `AUTH_ALLOWED_EMAILS`, `AUTH_TRUST_HOST` and `AUTH_URL` are plain env vars, not secrets.
 - **A decision about `/api/health`.** It is currently protected by the matcher above, which is right — it reports database reachability and a row count, which should not be public. But it also means no unauthenticated deploy check. If external monitoring is wanted later, add a separate liveness route that returns `{ok:true}` and nothing else.
 
 ## Why not a password
