@@ -38,6 +38,20 @@ globalStyle(':focus-visible', {
 
 globalStyle('button, input, select, textarea', { font: 'inherit' });
 
+/** Links in content inherit the surrounding colour and underline only on
+ *  hover. The browser default — blue, always underlined — fights every
+ *  palette in the token set. Navigation links carry button classes and opt
+ *  out of the underline entirely. */
+globalStyle('a', { color: 'inherit', textDecoration: 'none' });
+globalStyle('p a, dd a, li a:not([class])', {
+  textDecoration: 'underline',
+  textUnderlineOffset: '2px',
+  textDecorationColor: vars.color.border,
+});
+globalStyle('p a:hover, dd a:hover, li a:not([class]):hover', {
+  textDecorationColor: vars.color.accent,
+});
+
 globalStyle('*', {
   '@media': {
     '(prefers-reduced-motion: reduce)': {
