@@ -2,6 +2,7 @@ import Link from 'next/link'
 import * as styles from './appBar.css'
 import * as buttonStyles from './button.css'
 import { ThemeToggle } from './ThemeToggle'
+import { SignOut } from './SignOut'
 
 /**
  * 52px, identical on every screen, so navigation never shifts.
@@ -32,6 +33,7 @@ export function AppBar({ tally }: { tally?: { tracked: number; open: number } })
           Experience
         </Link>
         <ThemeToggle />
+        <SignOut />
         <Link href="/applications/new" className={buttonStyles.button.primary}>
           Add application
         </Link>
