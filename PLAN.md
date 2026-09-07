@@ -93,8 +93,8 @@ twice — and it needs no AI, no API key and no extra billing. Shipping this alo
 gives a working, deployed, containerised app worth pointing at.
 
 - **Data model:** see SCHEMA.md — proposed and Prisma-validated, not yet migrated. It replaces the Phase 6 placeholder `Application`.
-- **CRM:** companies, job postings, application records with a status pipeline (saved → applied → interview → offer/rejected)
-- **Duplicate guard:** warn when adding a posting matching a company + role already in the pipeline
+- ~~CRM~~ — done. Board, application detail, new application, companies index. Companies are matched by name case-insensitively so one employer typed two ways does not become two rows, which would defeat the guard and split the index.
+- ~~Duplicate guard~~ — done. Checks as you type rather than on submit: learning you already applied *after* pasting a job description is learning it too late. Case-insensitive on both fields, and it searches archived applications too, since a forgotten one is exactly the case it exists for.
 - **Theming:** dark and light both ship. Dark is primary; the light palette is fully specified, so there is no reason to defer it.
 - ~~Auth~~ — **done and live.** Google sign-in via Auth.js, JWT sessions, email allowlist, Google client left in testing mode so only listed addresses reach the consent screen. See AUTH.md.
 
