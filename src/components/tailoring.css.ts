@@ -168,3 +168,13 @@ export const versions = style({
   fontFamily: sys.font.mono,
   fontSize: sys.fontSize.meta,
 })
+
+/** Review screen: the header carries the actions and stays in view. The
+ *  background is opaque so blocks scrolling under it do not show through. */
+export const stickyHeader = style({
+  position: 'sticky',
+  top: 0,
+  zIndex: 2,
+  background: vars.color.bg,
+  flexWrap: 'wrap',
+})

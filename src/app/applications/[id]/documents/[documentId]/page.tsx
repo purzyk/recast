@@ -4,7 +4,6 @@ import * as screen from '@/components/screen.css'
 import * as buttonStyles from '@/components/button.css'
 import * as styles from '@/components/tailoring.css'
 import { AppBar } from '@/components/AppBar'
-import { TailorSteps } from '@/components/TailorSteps'
 import { DocumentBlockView } from '@/components/DocumentBlockView'
 import { CopyDocument } from '@/components/CopyDocument'
 import { DOCUMENT_LABEL, getDocument, getDocuments, toPlainText } from '@/lib/documents'
@@ -45,7 +44,7 @@ export default async function DocumentPage({
     <div className={styles.shell}>
       <AppBar />
 
-      <header className={screen.header}>
+      <header className={`${screen.header} ${styles.stickyHeader}`}>
         <div>
           <p className={screen.crumb}>
             <Link href="/">Board</Link> / <Link href={`/applications/${applicationId}`}>{document.company}</Link> /{' '}
@@ -56,8 +55,31 @@ export default async function DocumentPage({
           </h1>
           <p className={screen.subtitle}>{document.role}</p>
         </div>
+        {/* The actions live in the header, which sticks: a CV is long, and
+            the thing you came here to do is at the end of reading it. */}
         <div className={screen.headerActions}>
-          <TailorSteps current="Review" />
+          <form action={deleteDocument}>
+            <input type="hidden" name="documentId" value={document.id} />
+            <button type="submit" className={buttonStyles.button.ghost}>
+              Delete this version
+            </button>
+          </form>
+          <CopyDocument text={toPlainText(document.content, document.kind)} />
+          <Link href={`/applications/${applicationId}/tailor`} className={buttonStyles.button.secondary}>
+            Generate another version
+          </Link>
+          {/* Plain anchors: these are standalone HTML pages, not app routes. */}
+          <a href={printHref} target="_blank" rel="noopener" className={buttonStyles.button.secondary}>
+            Preview
+          </a>
+          <a
+            href={`${printHref}?print`}
+            target="_blank"
+            rel="noopener"
+            className={`${buttonStyles.button.primary} ${buttonStyles.large}`}
+          >
+            Download PDF
+          </a>
         </div>
       </header>
 
@@ -128,33 +150,6 @@ export default async function DocumentPage({
           )}
         </section>
       </div>
-
-      <footer className={screen.footer}>
-        <form action={deleteDocument}>
-          <input type="hidden" name="documentId" value={document.id} />
-          <button type="submit" className={buttonStyles.button.ghost}>
-            Delete this version
-          </button>
-        </form>
-        <div className={screen.footerRight}>
-          <CopyDocument text={toPlainText(document.content, document.kind)} />
-          <Link href={`/applications/${applicationId}/tailor`} className={buttonStyles.button.secondary}>
-            Generate another version
-          </Link>
-          {/* Plain anchors: these are standalone HTML pages, not app routes. */}
-          <a href={`${printHref}`} target="_blank" rel="noopener" className={buttonStyles.button.secondary}>
-            Preview
-          </a>
-          <a
-            href={`${printHref}?print`}
-            target="_blank"
-            rel="noopener"
-            className={`${buttonStyles.button.primary} ${buttonStyles.large}`}
-          >
-            Download PDF
-          </a>
-        </div>
-      </footer>
     </div>
   )
 }
