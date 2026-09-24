@@ -29,7 +29,54 @@ export interface ExperienceEntryRow {
   kind: ExperienceKind
   period: string | null
   body: string
+  links: string | null
+  parentId: number | null
   updatedAt: Date
+}
+
+export interface EntryLink {
+  label: string
+  url: string
+}
+
+/** "label url" per line. The URL is the last whitespace-separated token, so
+ *  a label may contain spaces. */
+export function parseLinks(raw: string | null): EntryLink[] {
+  if (!raw) return []
+  return raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const at = line.lastIndexOf(' ')
+      const url = at < 0 ? line : line.slice(at + 1)
+      if (!/^https?:\/\//.test(url)) return []
+      return [{ label: at < 0 ? new URL(url).hostname : line.slice(0, at).trim(), url }]
+    })
+}
+
+/** Intro prose and "- " bullets, the shape work and project bodies are
+ *  written in and rendered as. */
+export function splitBody(body: string): { intro: string; bullets: string[] } {
+  const intro: string[] = []
+  const bullets: string[] = []
+  for (const raw of body.split('\n')) {
+    const line = raw.trim()
+    if (!line) continue
+    if (line.startsWith('- ')) bullets.push(line.slice(2).trim())
+    else intro.push(line)
+  }
+  return { intro: intro.join(' '), bullets }
+}
+
+/** Newest first by the latest year a period mentions; "present" and
+ *  "ongoing" count as now. Periods are free text, so this is a heuristic —
+ *  good enough to order a CV's jobs without asking for a date field. */
+export function periodEnd(period: string | null): number {
+  if (!period) return 0
+  if (/present|ongoing|now/i.test(period)) return 9999
+  const years = period.match(/\d{4}/g)?.map(Number) ?? []
+  return years.length ? Math.max(...years) : 0
 }
 
 export interface KindCount {
@@ -50,6 +97,8 @@ export async function getEntries(kind?: ExperienceKind): Promise<(ExperienceEntr
     kind: row.kind as ExperienceKind,
     period: row.period,
     body: row.body,
+    links: row.links,
+    parentId: row.parentId,
     updatedAt: row.updatedAt,
     usedIn: row._count.usedIn,
   }))
@@ -64,6 +113,8 @@ export async function getEntry(id: number): Promise<ExperienceEntryRow | null> {
     kind: row.kind as ExperienceKind,
     period: row.period,
     body: row.body,
+    links: row.links,
+    parentId: row.parentId,
     updatedAt: row.updatedAt,
   }
 }

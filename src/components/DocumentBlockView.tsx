@@ -8,6 +8,16 @@ import * as styles from './tailoring.css'
 import type { DocumentBlock } from '@/lib/document-types'
 import { updateBlock } from '@/app/applications/[id]/actions'
 
+/** **bold** is the one piece of markup generated text carries: the terms the
+ *  printed CV emphasises. Rendered here so review shows what will print. */
+function Bold({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\*\*(.+?)\*\*/g).map((part, index) => (index % 2 ? <strong key={index}>{part}</strong> : part))}
+    </>
+  )
+}
+
 export function DocumentBlockView({
   documentId,
   block,
@@ -55,7 +65,13 @@ export function DocumentBlockView({
             autoFocus
             className={`${fieldStyles.control} ${fieldStyles.textarea}`}
           />
-          {block.format === 'list' && <span className={fieldStyles.hint}>One item per line</span>}
+          <span className={fieldStyles.hint}>
+            {block.format === 'list'
+              ? 'One item per line. **Bold** prints bold.'
+              : block.format === 'skills'
+                ? 'One row per line: Label: items'
+                : '**Bold** prints bold.'}
+          </span>
           <div className={styles.editorActions}>
             <button type="button" onClick={save} disabled={pending} className={buttonStyles.button.secondary}>
               {pending ? 'Saving…' : 'Save block'}
@@ -76,11 +92,27 @@ export function DocumentBlockView({
       ) : block.format === 'list' ? (
         <ul className={styles.blockList}>
           {items.map((item, index) => (
-            <li key={index}>{item}</li>
+            <li key={index}>
+              <Bold text={item} />
+            </li>
           ))}
         </ul>
+      ) : block.format === 'skills' ? (
+        <dl className={styles.skillRows}>
+          {items.map((item, index) => {
+            const at = item.indexOf(':')
+            return (
+              <div key={index} className={styles.skillRow}>
+                <dt className={styles.skillLabel}>{at < 0 ? '' : item.slice(0, at)}</dt>
+                <dd className={styles.skillItems}>{at < 0 ? item : item.slice(at + 1).trim()}</dd>
+              </div>
+            )
+          })}
+        </dl>
       ) : (
-        <p className={styles.blockText}>{block.text}</p>
+        <p className={styles.blockText}>
+          <Bold text={block.text} />
+        </p>
       )}
 
       <p className={screen.provenance}>

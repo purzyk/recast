@@ -4,7 +4,7 @@ import * as screen from '@/components/screen.css'
 import * as styles from '../page.css'
 import { AppBar } from '@/components/AppBar'
 import { ExperienceEntryForm } from '@/components/ExperienceEntryForm'
-import { getEntry, KIND_LABEL_ONE } from '@/lib/experience'
+import { getEntries, getEntry, KIND_LABEL_ONE } from '@/lib/experience'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,7 +17,7 @@ export default async function EditExperienceEntryPage({
   const id = Number(rawId)
   if (!Number.isInteger(id) || id <= 0) notFound()
 
-  const entry = await getEntry(id)
+  const [entry, jobs] = await Promise.all([getEntry(id), getEntries('work')])
   if (!entry) notFound()
 
   return (
@@ -31,7 +31,7 @@ export default async function EditExperienceEntryPage({
           <h1 className={screen.title}>{entry.title}</h1>
         </div>
       </header>
-      <ExperienceEntryForm entry={entry} />
+      <ExperienceEntryForm entry={entry} jobs={jobs} />
     </div>
   )
 }

@@ -192,3 +192,9 @@ cannot remember whether the recruiter called before or after the take-home.
 **No `Contact` model.** The screens never show a named person — `lastContactAt`
 is a bare timestamp. Adding contacts now would be modelling for a screen that
 does not exist. Easy to add later; hard to remove once it has rows.
+
+**What the CV template changed (Phase 9, second pass):**
+- `ExperienceEntry.links` — one "label url" per line: case study, live site, repo. Rendered next to the entry on the CV.
+- `ExperienceEntry.parentId` — a project that happened inside a job (Compass Studio under Talksome). The CV renders it as a subsection of that job instead of under Selected Projects. `SetNull` on delete: removing a job leaves its projects standalone rather than deleting them.
+- `Profile` — one row of JSON: name, contact, portfolio line, education, references. The parts of a CV that never change per posting, kept out of the model's input entirely.
+- A document block now carries a `slot` saying where it sits in the CV (headline, summary, skills, a job or one of its projects, a standalone project). The renderer reads employer, dates and links from the entry the slot names, never from generated text.

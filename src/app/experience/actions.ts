@@ -10,6 +10,8 @@ interface ParsedEntry {
   kind: ReturnType<typeof parseKind>
   period: string | null
   body: string
+  links: string | null
+  parentId: number | null
 }
 
 function parseKind(raw: FormDataEntryValue | null) {
@@ -26,7 +28,17 @@ function parseEntry(formData: FormData): ParsedEntry {
   if (!title) throw new Error('Title is required')
   if (!body) throw new Error('Body is required')
 
-  return { title, kind: parseKind(formData.get('kind')), period: period || null, body }
+  const links = String(formData.get('links') ?? '').trim()
+  const parent = Number(formData.get('parentId') || 0)
+
+  return {
+    title,
+    kind: parseKind(formData.get('kind')),
+    period: period || null,
+    body,
+    links: links || null,
+    parentId: Number.isInteger(parent) && parent > 0 ? parent : null,
+  }
 }
 
 function parseId(raw: FormDataEntryValue | null): number {

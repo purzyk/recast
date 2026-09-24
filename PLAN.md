@@ -127,6 +127,17 @@ than trusting an estimate.
 - Every generation is a new version. The library's "Used in" column is live.
 - Model defaults to `claude-opus-5`, overridable with `RECAST_MODEL` without a code change. Server-side refusal fallback is on (`fallbacks: "default"`).
 
+**Rebuilt on the CV template (after the first real output was unusable).**
+Asking the model to write a CV from scratch produced three loose blocks in the
+posting's language, in the third person, with employers mixed into one list.
+A CV is mostly fixed content, so the model now only fills what varies:
+- Fixed, rendered by code: name, contact, portfolio line, employers, dates, links, intro lines, references, education. Contact, portfolio, education and quotes live in a one-row `Profile`; the rest in the library entries.
+- Tailored by the model: the headline, the summary, which Key Skills rows and items and in what order, the bullets per job and per project subsection, and which standalone projects make Selected Projects.
+- Always English, in the style of the hand-made CV: no pronouns, past tense for ended roles, `**bold**` on a few terms per bullet.
+- Library entries gained `links` ("label url" per line) and `parentId` (a project inside a job renders as its subsection). Work and project bodies are an intro line plus "- " bullets; a skill entry is one Key Skills row.
+- The PDF is the browser's own print of a standalone page rendered in the master CV's CSS (`/applications/:id/documents/:doc/print`). The hand-made CVs are produced the same way, and Cloud Run needs no headless Chrome.
+- The board card shows the latest version of each document ("CV v2 · Letter v1").
+
 **Deliberately left out:** "regenerate untouched blocks". Generating another version covers the need, and partial regeneration needs a second prompt shape for little gain.
 
 **To switch on in production:** `ANTHROPIC_API_KEY` in Secret Manager, mounted with `--update-secrets` (never `--set-secrets`, see AUTH.md). Spend limit set in the Anthropic console first.

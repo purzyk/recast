@@ -138,6 +138,17 @@ export const editButton = style({
 export const editor = style({ display: 'flex', flexDirection: 'column', gap: sys.space.s2 })
 export const editorActions = style({ display: 'flex', gap: sys.space.s2 })
 
+export const skillRows = style({ margin: 0, display: 'flex', flexDirection: 'column', gap: '3px' })
+export const skillRow = style({
+  display: 'grid',
+  gridTemplateColumns: '110px 1fr',
+  gap: sys.space.s2,
+  fontSize: sys.fontSize.small,
+  lineHeight: 1.5,
+})
+export const skillLabel = style({ fontWeight: 600 })
+export const skillItems = style({ margin: 0 })
+
 export const sources = style({ color: vars.color.text })
 
 export const unmatched = style({ color: vars.color.text })

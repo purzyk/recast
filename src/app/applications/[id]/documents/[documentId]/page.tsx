@@ -34,6 +34,7 @@ export default async function DocumentPage({
   const matched = requirements.filter((requirement) => requirement.sources.length > 0)
   const unmatched = requirements.filter((requirement) => requirement.sources.length === 0)
   const label = DOCUMENT_LABEL[document.kind]
+  const printHref = `/applications/${applicationId}/documents/${document.id}/print`
 
   const segments = highlight(
     document.jobDescription ?? '',
@@ -140,12 +141,18 @@ export default async function DocumentPage({
           <Link href={`/applications/${applicationId}/tailor`} className={buttonStyles.button.secondary}>
             Generate another version
           </Link>
-          <Link
-            href={`/applications/${applicationId}`}
+          {/* Plain anchors: these are standalone HTML pages, not app routes. */}
+          <a href={`${printHref}`} target="_blank" rel="noopener" className={buttonStyles.button.secondary}>
+            Preview
+          </a>
+          <a
+            href={`${printHref}?print`}
+            target="_blank"
+            rel="noopener"
             className={`${buttonStyles.button.primary} ${buttonStyles.large}`}
           >
-            Back to application
-          </Link>
+            Download PDF
+          </a>
         </div>
       </footer>
     </div>

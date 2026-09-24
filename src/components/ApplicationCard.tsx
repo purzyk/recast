@@ -37,7 +37,20 @@ export function ApplicationCard({ card }: { card: BoardCard }) {
             )}
           </span>
           <span className={styles.role}>{card.role}</span>
-          <span className={styles.age}>{elapsed(card.since)}</span>
+          <span className={styles.foot}>
+            <span className={styles.age}>
+              {elapsed(card.since)}
+            </span>
+            {card.documents.length > 0 && (
+              <span className={styles.docs}>
+                {card.documents.map((document) => (
+                  <span key={document.kind} className={styles.docBadge}>
+                    {document.kind === 'cv' ? 'CV' : 'Letter'} v{document.version}
+                  </span>
+                ))}
+              </span>
+            )}
+          </span>
         </span>
       </Link>
     </li>

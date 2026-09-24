@@ -74,7 +74,7 @@ export const role = style({
 
 /** Time in this column, not the date it was created. */
 export const age = style({
-  margin: `${sys.space.s2} 0 0`,
+  margin: 0,
   fontFamily: sys.font.mono,
   fontSize: sys.fontSize.meta,
   fontVariantNumeric: 'tabular-nums',
@@ -96,4 +96,26 @@ export const externalMark = style({
     [`${card}:hover &`]: { opacity: 1, color: vars.color.text },
     [`${card}:focus-visible &`]: { opacity: 1, color: vars.color.text },
   },
+});
+
+/** The foot row: time in column on the left, generated documents on the
+ *  right, so a tailored application is recognisable without opening it. */
+export const foot = style({
+  display: 'flex',
+  alignItems: 'baseline',
+  gap: sys.space.s2,
+  margin: `${sys.space.s2} 0 0`,
+});
+
+export const docs = style({ marginLeft: 'auto', display: 'flex', gap: sys.space.s1 });
+
+export const docBadge = style({
+  padding: `1px ${sys.space.s1}`,
+  border: `${sys.border.width} solid ${vars.color.borderStrong}`,
+  borderRadius: sys.radius.sm,
+  fontFamily: sys.font.mono,
+  fontSize: sys.fontSize.micro,
+  letterSpacing: '0.04em',
+  color: vars.color.text,
+  whiteSpace: 'nowrap',
 });

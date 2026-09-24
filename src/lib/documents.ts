@@ -135,4 +135,5 @@ export function toPlainText(content: DocumentContent, kind: DocumentKind): strin
       return kind === 'cv' ? `${block.label}\n\n${body}` : body
     })
     .join('\n\n')
+    .replace(/\*\*/g, '')
 }

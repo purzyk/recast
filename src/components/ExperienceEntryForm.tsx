@@ -10,7 +10,14 @@ import { EXPERIENCE_KINDS, KIND_LABEL_ONE, type ExperienceEntryRow } from '@/lib
  * One form, both jobs. An edit is a create with an id and a delete button —
  * splitting them would duplicate every field for no gain.
  */
-export function ExperienceEntryForm({ entry }: { entry?: ExperienceEntryRow }) {
+export function ExperienceEntryForm({
+  entry,
+  jobs,
+}: {
+  entry?: ExperienceEntryRow
+  /** Work entries a project can sit under. */
+  jobs: { id: number; title: string }[]
+}) {
   const editing = Boolean(entry)
 
   return (
@@ -90,8 +97,55 @@ export function ExperienceEntryForm({ entry }: { entry?: ExperienceEntryRow }) {
           className={`${fieldStyles.control} ${fieldStyles.textarea}`}
         />
         <span className={fieldStyles.hint}>
-          What a tailored CV should be able to draw from. Write it as you would want it read.
+          Work and projects: an intro line, then one &ldquo;- &rdquo; bullet per line. Skills: the
+          items of one Key Skills row, the title being its label.
         </span>
+      </div>
+
+      <div className={styles.row}>
+        <div className={fieldStyles.field}>
+          <label htmlFor="parentId" className={fieldStyles.label}>
+            Part of
+          </label>
+          <div className={fieldStyles.selectWrap}>
+            <select
+              id="parentId"
+              name="parentId"
+              defaultValue={entry?.parentId ?? ''}
+              className={`${fieldStyles.control} ${fieldStyles.select}`}
+            >
+              <option value="">Nothing — standalone</option>
+              {jobs
+                .filter((job) => job.id !== entry?.id)
+                .map((job) => (
+                  <option key={job.id} value={job.id}>
+                    {job.title}
+                  </option>
+                ))}
+            </select>
+            <span className={fieldStyles.caret} aria-hidden>
+              <svg width={10} height={10} viewBox="0 0 10 10" focusable="false">
+                <path d="M2 4 5 7 8 4" fill="none" stroke="currentColor" strokeWidth={1.3} strokeLinecap="round" />
+              </svg>
+            </span>
+          </div>
+          <span className={fieldStyles.hint}>A project inside a job prints as a subsection of it</span>
+        </div>
+
+        <div className={fieldStyles.field}>
+          <label htmlFor="links" className={fieldStyles.label}>
+            Links
+          </label>
+          <textarea
+            id="links"
+            name="links"
+            rows={3}
+            defaultValue={entry?.links ?? ''}
+            placeholder="case study https://…"
+            className={`${fieldStyles.control} ${fieldStyles.textarea} ${fieldStyles.monoControl}`}
+          />
+          <span className={fieldStyles.hint}>One &ldquo;label url&rdquo; per line</span>
+        </div>
       </div>
 
       <div className={styles.footer}>

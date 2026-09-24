@@ -110,13 +110,35 @@ model ExperienceEntry {
   /// Display string, deliberately not a date range: "2018 – present" and the
   /// "—" a skill carries are both unrepresentable as two DateTimes.
   period String?
-  body   String
+
+  /// Work and project entries: intro prose, then one "- " bullet per line,
+  /// which is how the CV renders them. Skills: the comma-separated items of
+  /// one Key Skills row, the title being the row's label.
+  body String
+
+  /// One "label url" pair per line: a case study, a live site, a repo.
+  links String?
+
+  /// A project that happened inside a job (Compass Studio under Talksome)
+  /// renders as a subsection of that job rather than in Selected Projects.
+  parent   ExperienceEntry?  @relation("EntryChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  parentId Int?
+  children ExperienceEntry[] @relation("EntryChildren")
 
   usedIn    DocumentSource[]
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 
   @@index([kind])
+}
+
+/// The parts of a CV that never change per posting: name, contact, the
+/// portfolio line, education, references. One row. JSON, shaped by
+/// src/lib/profile.ts. Tailoring does not see it; the renderer does.
+model Profile {
+  id        Int      @id @default(1)
+  content   String
+  updatedAt DateTime @updatedAt
 }
 
 /// A generated CV or cover letter. Versions accumulate; regeneration writes a

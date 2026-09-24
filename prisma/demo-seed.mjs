@@ -11,6 +11,7 @@ import { PrismaClient } from '../src/generated/prisma/index.js'
 const read = (name) => JSON.parse(fs.readFileSync(new URL(`./demo/${name}`, import.meta.url), 'utf8'))
 const postings = read('postings.json')
 const experience = read('experience.json')
+const profile = read('profile.json')
 
 // Per posting: the status path it took, as [status, days ago] steps, plus
 // what a human would have written down. Posting 11 is left out on purpose:
@@ -67,10 +68,23 @@ await db.$transaction([
   db.application.deleteMany(),
   db.company.deleteMany(),
   db.experienceEntry.deleteMany(),
+  db.profile.deleteMany(),
 ])
 
-for (const entry of experience) {
-  await db.experienceEntry.create({ data: entry })
+await db.profile.create({ data: { id: 1, content: JSON.stringify(profile) } })
+
+// Parents are named by title in the data file and resolved once every entry
+// has an id. Created in reverse so the library, which lists newest first,
+// shows them in the file's order.
+const ids = new Map()
+for (const { parent, ...entry } of [...experience].reverse()) {
+  const created = await db.experienceEntry.create({ data: entry })
+  ids.set(entry.title, created.id)
+}
+for (const entry of experience.filter((item) => item.parent)) {
+  const parentId = ids.get(entry.parent)
+  if (!parentId) throw new Error(`Unknown parent "${entry.parent}" for "${entry.title}"`)
+  await db.experienceEntry.update({ where: { id: ids.get(entry.title) }, data: { parentId } })
 }
 
 for (const posting of postings) {

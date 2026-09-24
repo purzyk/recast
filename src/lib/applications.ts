@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { STATUS_ORDER, type Status } from '@/lib/status'
+import { DOCUMENT_KINDS, type DocumentKind } from '@/lib/document-types'
 
 export interface BoardCard {
   id: number
@@ -9,6 +10,8 @@ export interface BoardCard {
   hasSource: boolean
   /** When this application entered its current column. */
   since: Date
+  /** Latest version of each generated document kind, CV first. */
+  documents: { kind: DocumentKind; version: number }[]
 }
 
 export interface BoardColumn {
@@ -29,8 +32,15 @@ export async function getBoard(): Promise<BoardColumn[]> {
     include: {
       company: { select: { name: true } },
       history: { orderBy: { at: 'desc' }, take: 1, select: { at: true } },
+      documents: { select: { kind: true, version: true } },
     },
   })
+
+  const latest = (documents: { kind: string; version: number }[]) =>
+    DOCUMENT_KINDS.flatMap((kind) => {
+      const versions = documents.filter((document) => document.kind === kind).map((document) => document.version)
+      return versions.length ? [{ kind, version: Math.max(...versions) }] : []
+    })
 
   const cards: BoardCard[] = applications.map((application) => ({
     id: application.id,
@@ -39,6 +49,7 @@ export async function getBoard(): Promise<BoardColumn[]> {
     status: application.status as Status,
     hasSource: Boolean(application.sourceUrl),
     since: application.history[0]?.at ?? application.createdAt,
+    documents: latest(application.documents),
   }))
 
   // Every column is always present, including empty ones. A pipeline with a

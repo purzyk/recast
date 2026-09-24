@@ -3,10 +3,12 @@ import * as screen from '@/components/screen.css'
 import * as styles from '../page.css'
 import { AppBar } from '@/components/AppBar'
 import { ExperienceEntryForm } from '@/components/ExperienceEntryForm'
+import { getEntries } from '@/lib/experience'
 
 export const dynamic = 'force-dynamic'
 
-export default function NewExperienceEntryPage() {
+export default async function NewExperienceEntryPage() {
+  const jobs = await getEntries('work')
   return (
     <div className={styles.shell}>
       <AppBar />
@@ -18,7 +20,7 @@ export default function NewExperienceEntryPage() {
           <h1 className={screen.title}>New entry</h1>
         </div>
       </header>
-      <ExperienceEntryForm />
+      <ExperienceEntryForm jobs={jobs} />
     </div>
   )
 }
