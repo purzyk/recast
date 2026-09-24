@@ -43,7 +43,7 @@ export function ExperienceEntryForm({
       <div className={styles.row}>
         <div className={fieldStyles.field}>
           <label htmlFor="kind" className={fieldStyles.label}>
-            Kind
+            Type
           </label>
           <div className={fieldStyles.selectWrap}>
             <select

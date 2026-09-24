@@ -3,6 +3,7 @@ import * as styles from './appBar.css'
 import * as buttonStyles from './button.css'
 import { ThemeToggle } from './ThemeToggle'
 import { SignOut } from './SignOut'
+import { NavLinks } from './NavLinks'
 
 /**
  * 52px, identical on every screen, so navigation never shifts.
@@ -26,12 +27,8 @@ export function AppBar({ tally }: { tally?: { tracked: number; open: number } })
       )}
 
       <nav className={styles.right}>
-        <Link href="/companies" className={buttonStyles.button.ghost}>
-          Companies
-        </Link>
-        <Link href="/experience" className={buttonStyles.button.ghost}>
-          Experience
-        </Link>
+        <NavLinks />
+        <span className={styles.divider} aria-hidden />
         <ThemeToggle />
         <SignOut />
         <Link href="/applications/new" className={buttonStyles.button.primary}>

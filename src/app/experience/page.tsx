@@ -12,9 +12,21 @@ import {
   getLastEdited,
   isExperienceKind,
   KIND_LABEL_ONE,
+  EXPERIENCE_KINDS,
+  periodEnd,
 } from '@/lib/experience'
 
 export const dynamic = 'force-dynamic'
+
+/** The body as a one-line preview: no bullet dashes, no bold markers. */
+function excerpt(body: string): string {
+  return body
+    .split('\n')
+    .map((line) => line.replace(/^-\s+/, '').trim())
+    .filter(Boolean)
+    .join(' · ')
+    .replace(/\*\*/g, '')
+}
 
 export default async function ExperiencePage({
   searchParams,
@@ -31,6 +43,24 @@ export default async function ExperiencePage({
   ])
 
   const total = counts[0]?.count ?? 0
+
+  // In the shape of the CV the library feeds: jobs newest first, each
+  // followed by its projects; then standalone projects, skills, the rest.
+  // A filtered view has no parents to nest under, so it stays flat.
+  const titles = new Map(entries.map((entry) => [entry.id, entry.title]))
+  const byEnd = (a: (typeof entries)[number], b: (typeof entries)[number]) => periodEnd(b.period) - periodEnd(a.period)
+  const childrenOf = (id: number) => entries.filter((entry) => entry.parentId === id).sort(byEnd)
+  const nested = new Set<number>()
+  const ordered = EXPERIENCE_KINDS.flatMap((type) =>
+    entries
+      .filter((entry) => entry.kind === type && !(entry.parentId && titles.has(entry.parentId)))
+      .sort(type === 'skill' ? (a, b) => a.id - b.id : byEnd)
+      .flatMap((entry) => {
+        const children = childrenOf(entry.id)
+        children.forEach((child) => nested.add(child.id))
+        return [entry, ...children]
+      }),
+  )
 
   return (
     <div className={styles.shell}>
@@ -94,25 +124,30 @@ export default async function ExperiencePage({
                 <thead>
                   <tr>
                     <th className={table.th}>Entry</th>
-                    <th className={table.th}>Kind</th>
-                    <th className={`${table.th} ${table.num}`}>Dates</th>
+                    <th className={table.th}>Type</th>
                     <th className={`${table.th} ${table.num}`}>Used in</th>
                     <th className={`${table.th} ${table.num}`}>Last edited</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {entries.map((entry) => (
-                    <tr key={entry.id} className={table.row}>
-                      <td className={`${table.td} ${styles.titleCell}`}>
-                        <Link href={`/experience/${entry.id}`}>{entry.title}</Link>
-                        <span className={styles.excerpt}>{entry.body}</span>
-                      </td>
-                      <td className={`${table.td} ${table.dimCell}`}>{KIND_LABEL_ONE[entry.kind]}</td>
-                      <td className={`${table.td} ${table.num}`}>{entry.period ?? '—'}</td>
-                      <td className={`${table.td} ${table.num}`}>{entry.usedIn}</td>
-                      <td className={`${table.td} ${table.num}`}>{elapsed(entry.updatedAt)}</td>
-                    </tr>
-                  ))}
+                  {ordered.map((entry) => {
+                    const parent = entry.parentId ? titles.get(entry.parentId) : undefined
+                    const meta = [entry.period, parent && `part of ${parent}`].filter(Boolean).join(' · ')
+                    return (
+                      <tr key={entry.id} className={table.row}>
+                        <td
+                          className={`${table.td} ${styles.titleCell} ${nested.has(entry.id) ? styles.childCell : ''}`}
+                        >
+                          <Link href={`/experience/${entry.id}`}>{entry.title}</Link>
+                          {meta && <span className={styles.entryMeta}>{meta}</span>}
+                          <span className={styles.excerpt}>{excerpt(entry.body)}</span>
+                        </td>
+                        <td className={`${table.td} ${table.dimCell}`}>{KIND_LABEL_ONE[entry.kind]}</td>
+                        <td className={`${table.td} ${table.num}`}>{entry.usedIn}</td>
+                        <td className={`${table.td} ${table.num}`}>{elapsed(entry.updatedAt)}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
               <p className={styles.footnote}>

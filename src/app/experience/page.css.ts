@@ -82,7 +82,7 @@ export const excerpt = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  maxWidth: '46ch',
+  maxWidth: '72ch',
 })
 
 export const footnote = style({
@@ -99,3 +99,18 @@ export const headerActions = style({
   alignItems: 'center',
   gap: sys.space.s2,
 })
+
+/** Dates and the parent job, between the title and the excerpt. Mono like
+ *  every other date in the app, at the excerpt's size. */
+export const entryMeta = style({
+  display: 'block',
+  marginTop: '2px',
+  fontFamily: sys.font.mono,
+  fontSize: sys.fontSize.meta,
+  fontWeight: 400,
+  color: vars.color.muted,
+})
+
+/** A project inside a job sits under it, indented, so the library reads in
+ *  the same shape as the CV it feeds. */
+export const childCell = style({ paddingLeft: sys.space.s5 })

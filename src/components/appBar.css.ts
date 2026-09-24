@@ -81,3 +81,11 @@ export const kbdHint = style({
   pointerEvents: 'none',
   '@media': { [bp.laptop]: { display: 'none' } },
 });
+
+/** Where you are. Text colour plus a 2px accent rule under the label: the
+ *  rule carries it for anyone who cannot tell the grey from the white. */
+export const navActive = style({
+  color: vars.color.text,
+  background: vars.color.surfaceHi,
+  boxShadow: `inset 0 -2px 0 ${vars.color.accent}`,
+});
