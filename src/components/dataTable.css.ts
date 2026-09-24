@@ -14,7 +14,7 @@ export const th = style({
   padding: `0 ${sys.space.s3} ${sys.space.s2}`,
   borderBottom: `${sys.border.width} solid ${vars.color.border}`,
   fontFamily: sys.font.mono,
-  fontSize: sys.fontSize.micro,
+  fontSize: sys.fontSize.meta,
   fontWeight: 400,
   letterSpacing: '0.09em',
   textTransform: 'uppercase',

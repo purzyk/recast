@@ -11,9 +11,11 @@ const LINKS = [
   { href: '/experience', label: 'Experience' },
 ]
 
-/** Application screens count as the board: that is where you reach them from. */
+/** An existing application's screens count as the board: that is where you
+ *  reach them from. The new-application form belongs to no section — it is
+ *  the primary action, not a place — so nothing is lit there. */
 function isActive(href: string, pathname: string): boolean {
-  if (href === '/') return pathname === '/' || pathname.startsWith('/applications')
+  if (href === '/') return pathname === '/' || /^\/applications\/\d+/.test(pathname)
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
