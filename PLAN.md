@@ -138,6 +138,15 @@ A CV is mostly fixed content, so the model now only fills what varies:
 - The PDF is the browser's own print of a standalone page rendered in the master CV's CSS (`/applications/:id/documents/:doc/print`). The hand-made CVs are produced the same way, and Cloud Run needs no headless Chrome.
 - The board card shows the latest version of each document ("CV v2 · Letter v1").
 
+**Import from CV.** The library no longer has to be typed in: paste a CV or
+upload a PDF (Claude reads PDFs directly), and one call restructures it into the
+profile and entries — jobs, projects under their jobs, skill rows, links,
+quotes — keeping the CV's wording. Nothing is saved until the preview is
+accepted, as "add" or "replace", with the profile replaced only when asked.
+Link URLs are recorded only when written out in the CV: a PDF shows "case
+study" as a word, not its address, and the first test run filled those in with
+guesses. A missing link is fixed in the library; a wrong one ships on a CV.
+
 **Deliberately left out:** "regenerate untouched blocks". Generating another version covers the need, and partial regeneration needs a second prompt shape for little gain.
 
 **To switch on in production:** `ANTHROPIC_API_KEY` in Secret Manager, mounted with `--update-secrets` (never `--set-secrets`, see AUTH.md). Spend limit set in the Anthropic console first.

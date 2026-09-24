@@ -48,6 +48,9 @@ export default async function ExperiencePage({
           </p>
         </div>
         <div className={styles.headerActions}>
+          <Link href="/experience/import" className={buttonStyles.button.secondary}>
+            Import from CV
+          </Link>
           <Link href="/experience/new" className={buttonStyles.button.primary}>
             Add entry
           </Link>
