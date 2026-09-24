@@ -47,10 +47,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   })
   if (!application) return new Response('Not found', { status: 404 })
 
+  // Cancel in the browser aborts the fetch; either signal below reaches the
+  // API call, which stops generating. Nothing is saved after an abort.
+  const abort = new AbortController()
+  request.signal.addEventListener('abort', () => abort.abort())
+
   const encoder = new TextEncoder()
   const stream = new ReadableStream<Uint8Array>({
+    cancel() {
+      abort.abort()
+    },
     async start(controller) {
-      const send = (event: TailorEvent) => controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
+      const send = (event: TailorEvent) => {
+        if (!abort.signal.aborted) controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
+      }
 
       try {
         const jobDescription = application.jobDescription?.trim()
@@ -62,7 +72,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         const result = await tailor(
           { kind, company: application.company.name, role: application.role, jobDescription, entries },
           (phase) => send({ type: 'phase', phase }),
+          abort.signal,
         )
+        if (abort.signal.aborted) return
 
         send({ type: 'phase', phase: 'saving' })
         const created = await createDocumentVersion({ applicationId: id, kind, ...result })
@@ -71,10 +83,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         revalidatePath('/experience')
         send({ type: 'done', documentId: created.id, version: created.version })
       } catch (error) {
+        if (abort.signal.aborted) return
         console.error('tailoring failed', error)
         send({ type: 'error', message: describe(error) })
       } finally {
-        controller.close()
+        try {
+          controller.close()
+        } catch {
+          // Already closed by the client cancelling.
+        }
       }
     },
   })

@@ -243,7 +243,13 @@ function letterBlocks(output: z.infer<typeof LetterOutput>, entries: ExperienceE
  * timeouts: the phases it reports are the model's own (thinking, then
  * writing), not a timer pretending to know.
  */
-export async function tailor(input: TailorInput, onPhase: (phase: TailorPhase) => void): Promise<TailorResult> {
+/** `signal` aborts the API call itself, so a cancelled run stops generating
+ *  (and billing) rather than finishing unseen. */
+export async function tailor(
+  input: TailorInput,
+  onPhase: (phase: TailorPhase) => void,
+  signal?: AbortSignal,
+): Promise<TailorResult> {
   const known = new Set(input.entries.map((entry) => entry.id))
 
   onPhase('reading')
@@ -265,7 +271,7 @@ export async function tailor(input: TailorInput, onPhase: (phase: TailorPhase) =
           `Today is ${new Date().toISOString().slice(0, 10)}.`,
       },
     ],
-  })
+  }, { signal })
 
   let phase: TailorPhase = 'reading'
   const advance = (next: TailorPhase) => {

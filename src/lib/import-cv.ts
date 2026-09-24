@@ -67,7 +67,11 @@ export class ImportError extends Error {}
 
 export type ImportSource = { type: 'text'; text: string } | { type: 'pdf'; base64: string }
 
-export async function importCv(source: ImportSource, onPhase: (phase: TailorPhase) => void): Promise<ImportPreview> {
+export async function importCv(
+  source: ImportSource,
+  onPhase: (phase: TailorPhase) => void,
+  signal?: AbortSignal,
+): Promise<ImportPreview> {
   onPhase('reading')
 
   const content: Anthropic.Beta.BetaContentBlockParam[] =
@@ -86,7 +90,7 @@ export async function importCv(source: ImportSource, onPhase: (phase: TailorPhas
     system: SYSTEM,
     output_config: { format: betaZodOutputFormat(ImportPreview) },
     messages: [{ role: 'user', content }],
-  })
+  }, { signal })
 
   let phase: TailorPhase = 'reading'
   stream.on('streamEvent', (event) => {

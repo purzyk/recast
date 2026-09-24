@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import * as screen from './screen.css'
 import * as buttonStyles from './button.css'
@@ -32,6 +32,7 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
   const [mode, setMode] = useState<'add' | 'replace'>(existing ? 'add' : 'replace')
   const [replaceProfile, setReplaceProfile] = useState(!hasProfile)
   const [saving, startSaving] = useTransition()
+  const abortRef = useRef<AbortController | null>(null)
 
   const running = phase !== null
   useEffect(() => {
@@ -46,8 +47,10 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
     setError(null)
     setPreview(null)
     setPhase('reading')
+    const controller = new AbortController()
+    abortRef.current = controller
     try {
-      const response = await fetch('/api/import', { method: 'POST', body: new FormData(form) })
+      const response = await fetch('/api/import', { method: 'POST', body: new FormData(form), signal: controller.signal })
       if (!response.ok || !response.body) throw new Error((await response.text()) || `Request failed (${response.status})`)
 
       const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
@@ -73,7 +76,7 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
       throw new Error('The connection closed before the CV was read.')
     } catch (caught) {
       setPhase(null)
-      setError(caught instanceof Error ? caught.message : String(caught))
+      setError(controller.signal.aborted ? 'Cancelled.' : caught instanceof Error ? caught.message : String(caught))
     }
   }
 
@@ -191,6 +194,14 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
                 )
               })}
             </div>
+            <button
+              type="button"
+              onClick={() => abortRef.current?.abort()}
+              className={buttonStyles.button.ghost}
+              style={{ alignSelf: 'flex-start' }}
+            >
+              Cancel
+            </button>
           </div>
         )}
 

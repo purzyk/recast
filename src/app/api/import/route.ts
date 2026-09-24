@@ -48,18 +48,32 @@ export async function POST(request: Request) {
     return new Response('Paste the CV or choose a PDF', { status: 400 })
   }
 
+  // Same cancellation path as tailoring: a cancelled import stops the API call.
+  const abort = new AbortController()
+  request.signal.addEventListener('abort', () => abort.abort())
+
   const encoder = new TextEncoder()
   const stream = new ReadableStream<Uint8Array>({
+    cancel() {
+      abort.abort()
+    },
     async start(controller) {
-      const send = (event: ImportEvent) => controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
+      const send = (event: ImportEvent) => {
+        if (!abort.signal.aborted) controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
+      }
       try {
-        const preview = await importCv(source, (phase) => send({ type: 'phase', phase }))
+        const preview = await importCv(source, (phase) => send({ type: 'phase', phase }), abort.signal)
         send({ type: 'done', preview })
       } catch (error) {
+        if (abort.signal.aborted) return
         console.error('import failed', error)
         send({ type: 'error', message: describe(error) })
       } finally {
-        controller.close()
+        try {
+          controller.close()
+        } catch {
+          // Already closed by the client cancelling.
+        }
       }
     },
   })

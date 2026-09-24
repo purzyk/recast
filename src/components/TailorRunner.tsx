@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import * as buttonStyles from './button.css'
 import * as loadStyles from './loadingPanel.css'
@@ -34,6 +34,7 @@ export function TailorRunner({
   const [phase, setPhase] = useState<Phase | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [seconds, setSeconds] = useState(0)
+  const abortRef = useRef<AbortController | null>(null)
 
   const running = phase !== null
 
@@ -48,12 +49,15 @@ export function TailorRunner({
   async function run() {
     setError(null)
     setPhase('reading')
+    const controller = new AbortController()
+    abortRef.current = controller
 
     try {
       const response = await fetch(`/api/applications/${applicationId}/tailor`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kind }),
+        signal: controller.signal,
       })
       if (!response.ok || !response.body) throw new Error(`Request failed (${response.status})`)
 
@@ -79,7 +83,13 @@ export function TailorRunner({
       throw new Error('The connection closed before tailoring finished.')
     } catch (caught) {
       setPhase(null)
-      setError(caught instanceof Error ? caught.message : String(caught))
+      setError(
+        controller.signal.aborted
+          ? 'Cancelled. Nothing was saved.'
+          : caught instanceof Error
+            ? caught.message
+            : String(caught),
+      )
     }
   }
 
@@ -87,7 +97,7 @@ export function TailorRunner({
   const stepText: Record<Phase, string> = {
     reading: 'Reading the job description',
     matching: `Matching ${entryCount} experience ${entryCount === 1 ? 'entry' : 'entries'}`,
-    drafting: `Drafting the ${label.toLowerCase()}`,
+    drafting: kind === 'cv' ? 'Drafting the CV' : 'Drafting the cover letter',
     saving: `Saving as ${label} v${nextVersion[kind]}`,
   }
 
@@ -118,6 +128,18 @@ export function TailorRunner({
             </span>
           ))}
         </div>
+        {/* Saving is a database write that takes milliseconds; cancelling
+            it would only race the result. */}
+        {phase !== 'saving' && (
+          <button
+            type="button"
+            onClick={() => abortRef.current?.abort()}
+            className={buttonStyles.button.ghost}
+            style={{ alignSelf: 'flex-start' }}
+          >
+            Cancel
+          </button>
+        )}
       </div>
     )
   }
