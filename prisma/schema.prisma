@@ -5,7 +5,6 @@
 //
 // The model is derived from what the designed screens display — see SCHEMA.md
 // for the reasoning, including what is deliberately derived rather than stored.
-// Document and DocumentSource land with Phase 9; nothing before then uses them.
 generator client {
   provider = "prisma-client-js"
 
@@ -31,6 +30,11 @@ enum ExperienceKind {
   project
   skill
   achievement
+}
+
+enum DocumentKind {
+  cv
+  coverLetter
 }
 
 model Company {
@@ -62,8 +66,9 @@ model Application {
   /// Set by a human contacting you, not by a status change.
   lastContactAt DateTime?
 
-  history StatusEvent[]
-  notes   Note[]
+  history   StatusEvent[]
+  notes     Note[]
+  documents Document[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -107,8 +112,53 @@ model ExperienceEntry {
   period String?
   body   String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  usedIn    DocumentSource[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
   @@index([kind])
+}
+
+/// A generated CV or cover letter. Versions accumulate; regeneration writes a
+/// new row rather than replacing one, so what you actually sent stays readable
+/// after a recruiter calls.
+model Document {
+  id            Int          @id @default(autoincrement())
+  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId Int
+  kind          DocumentKind
+  version       Int
+
+  /// JSON: the generated blocks with their per-block provenance, plus the
+  /// posting's requirements and which entries matched them. The shape lives
+  /// in src/lib/document-types.ts.
+  content String
+
+  /// Touched by hand. Set once any block is edited after generation.
+  edited Boolean @default(false)
+
+  /// Which model wrote it and what it cost in tokens, kept per version so a
+  /// model change shows in the history rather than only in the config.
+  model        String
+  inputTokens  Int
+  outputTokens Int
+
+  sources   DocumentSource[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([applicationId, kind, version])
+}
+
+/// Which experience entries fed which document. Two jobs: the provenance line
+/// under a generated block, and the "used in" count in the library — the
+/// number that tells you an entry has never earned its place.
+model DocumentSource {
+  document   Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId Int
+  entry      ExperienceEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  entryId    Int
+
+  @@id([documentId, entryId])
+  @@index([entryId])
 }

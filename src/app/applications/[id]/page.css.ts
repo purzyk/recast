@@ -9,10 +9,10 @@ export const shell = style({
   color: vars.color.text,
 })
 
-/** Record and history on the left, notes on the right. Stacks below laptop —
- *  two narrow columns of prose is worse than one wide one. */
-export const twoPane = style({
-  gridTemplateColumns: '1fr 1fr',
+/** Record and history, notes, then documents. Stacks below laptop — narrow
+ *  columns of prose are worse than one wide one. */
+export const panes = style({
+  gridTemplateColumns: '1fr 1fr 340px',
   '@media': {
     [bp.laptop]: { gridTemplateColumns: '1fr' },
   },
@@ -50,6 +50,16 @@ export const noteDate = style({
   fontFamily: sys.font.mono,
   fontSize: sys.fontSize.micro,
   color: vars.color.muted,
+})
+
+export const documentTable = style({ marginBottom: sys.space.s4 })
+
+export const tailorHint = style({
+  margin: `${sys.space.s2} 0 0`,
+  fontFamily: sys.font.mono,
+  fontSize: sys.fontSize.micro,
+  color: vars.color.muted,
+  textAlign: 'center',
 })
 
 export const noteForm = style({

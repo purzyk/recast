@@ -119,6 +119,18 @@ than trusting an estimate.
 - Output must be editable in place, not a black box to accept blind
 - **Cost controls before switching it on:** a hard spend limit in the Anthropic console, and consider Haiku over Sonnet — likely sufficient for this task at a fraction of the price
 
+**Built:**
+- `Document` + `DocumentSource` migration, as SCHEMA.md proposed, plus `model`, `inputTokens` and `outputTokens` per version so what each draft cost is on record.
+- One streamed call (`src/lib/tailor.ts`) with structured output: the model returns blocks, each citing the experience entry ids it drew on, and the posting's requirements quoted verbatim with the entries that evidence them. Unknown ids are dropped server-side, not trusted.
+- The progress panel's steps follow the stream (thinking started, text started, saving), not a timer.
+- Review screen: posting on the left with matched requirements underlined and unmatched ones listed; blocks on the right with their provenance line, editable in place. An edit marks the block and the version `edited`.
+- Every generation is a new version. The library's "Used in" column is live.
+- Model defaults to `claude-opus-5`, overridable with `RECAST_MODEL` without a code change. Server-side refusal fallback is on (`fallbacks: "default"`).
+
+**Deliberately left out:** "regenerate untouched blocks". Generating another version covers the need, and partial regeneration needs a second prompt shape for little gain.
+
+**To switch on in production:** `ANTHROPIC_API_KEY` in Secret Manager, mounted with `--update-secrets` (never `--set-secrets`, see AUTH.md). Spend limit set in the Anthropic console first.
+
 ### Phase 10 — Stretch ideas (not committed, revisit later)
 - Mock interview practice tool over WebRTC, questions generated from a stored job description
 - Small MCP server exposing the stored experience/project data, so any MCP-aware LLM client can query it directly

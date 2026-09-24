@@ -106,20 +106,16 @@ export default async function ExperiencePage({
                       </td>
                       <td className={`${table.td} ${table.dimCell}`}>{KIND_LABEL_ONE[entry.kind]}</td>
                       <td className={`${table.td} ${table.num}`}>{entry.period ?? '—'}</td>
-                      {/* Usage tracking needs the Document model, which lands
-                          with tailoring in Phase 9. A dash rather than 0:
-                          "never used" and "not tracked yet" are different
-                          claims, and only one of them is true today. */}
-                      <td className={`${table.td} ${table.num}`}>—</td>
+                      <td className={`${table.td} ${table.num}`}>{entry.usedIn}</td>
                       <td className={`${table.td} ${table.num}`}>{elapsed(entry.updatedAt)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <p className={styles.footnote}>
-                &ldquo;Used in&rdquo; counts the tailored documents an entry has fed. It stays blank
-                until tailoring ships — then an entry sitting at zero is one that needs rewriting,
-                or a sign you are applying for the wrong jobs.
+                &ldquo;Used in&rdquo; counts the tailored documents an entry has fed. An entry
+                sitting at zero either needs rewriting, or is a sign you are applying for the wrong
+                jobs.
               </p>
             </>
           )}

@@ -38,10 +38,11 @@ export interface KindCount {
   count: number
 }
 
-export async function getEntries(kind?: ExperienceKind): Promise<ExperienceEntryRow[]> {
+export async function getEntries(kind?: ExperienceKind): Promise<(ExperienceEntryRow & { usedIn: number })[]> {
   const rows = await db.experienceEntry.findMany({
     where: kind ? { kind } : undefined,
     orderBy: { updatedAt: 'desc' },
+    include: { _count: { select: { usedIn: true } } },
   })
   return rows.map((row) => ({
     id: row.id,
@@ -50,6 +51,7 @@ export async function getEntries(kind?: ExperienceKind): Promise<ExperienceEntry
     period: row.period,
     body: row.body,
     updatedAt: row.updatedAt,
+    usedIn: row._count.usedIn,
   }))
 }
 

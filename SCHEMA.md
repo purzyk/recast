@@ -1,7 +1,7 @@
 # Recast — proposed data model
 
 Derived from what the six designed screens actually display, not from a guess
-at what a tracker needs. Nothing here is migrated yet.
+at what a tracker needs. All of it is migrated; `Document` gained three fields in Phase 9, noted below.
 
 The current `prisma/schema.prisma` holds a placeholder `Application` written in
 Phase 6 to prove the database connection. This replaces it.
@@ -176,6 +176,11 @@ Two migrations rather than one, so nothing unused ships early:
 The cost is that the library's "used in" column reads 0 for everything until
 Phase 9 lands. That is honest rather than broken — the column means "never
 made it into a document", and before Phase 9 nothing has.
+
+**What Phase 9 changed from this proposal:**
+- `Document` also stores `model`, `inputTokens` and `outputTokens`. Each version records which model wrote it and what it cost, so switching models shows up in the history.
+- `content` is JSON, not prose: the blocks, each with the entry ids it cites and its own `edited` flag, plus the posting's requirements and the entries that matched them. Blocks are what the review screen edits and attributes, and a flat string cannot carry per-block provenance. The shape is `DocumentContent` in `src/lib/document-types.ts`.
+- `DocumentSource` got an index on `entryId`, which the library's "used in" count queries by.
 
 ## Two decisions worth a second look
 

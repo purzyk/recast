@@ -14,6 +14,8 @@ import { DeleteApplication } from '@/components/DeleteApplication'
 import { getApplication, chaseHint } from '@/lib/application-detail'
 import { STATUS_LABEL } from '@/lib/status'
 import { elapsed } from '@/lib/elapsed'
+import { DOCUMENT_LABEL, getDocuments } from '@/lib/documents'
+import * as table from '@/components/dataTable.css'
 import { addNote } from './actions'
 
 export const dynamic = 'force-dynamic'
@@ -29,7 +31,7 @@ export default async function ApplicationDetailPage({
   const id = Number(rawId)
   if (!Number.isInteger(id) || id <= 0) notFound()
 
-  const application = await getApplication(id)
+  const [application, documents] = await Promise.all([getApplication(id), getDocuments(id)])
   if (!application) notFound()
 
   const hint = chaseHint(application.status, application.since)
@@ -57,7 +59,7 @@ export default async function ApplicationDetailPage({
         </div>
       </header>
 
-      <div className={`${screen.body} ${pageStyles.twoPane}`}>
+      <div className={`${screen.body} ${pageStyles.panes}`}>
         {/* ---- left: the record ---- */}
         <section className={screen.pane}>
           <h2 className={screen.paneLabel}>Record</h2>
@@ -150,6 +152,44 @@ export default async function ApplicationDetailPage({
               Add a note
             </button>
           </form>
+        </section>
+
+        {/* ---- documents ---- */}
+        <section className={screen.pane}>
+          <h2 className={screen.paneLabel}>Documents</h2>
+
+          {documents.length > 0 ? (
+            <table className={`${table.table} ${pageStyles.documentTable}`}>
+              <tbody>
+                {documents.map((document) => (
+                  <tr key={document.id} className={table.row}>
+                    <td className={table.td}>
+                      <Link href={`/applications/${application.id}/documents/${document.id}`}>
+                        <span className={table.primaryCell}>{DOCUMENT_LABEL[document.kind]}</span>
+                      </Link>{' '}
+                      <span className={table.dimCell}>v{document.version}</span>
+                    </td>
+                    <td className={`${table.td} ${table.num}`}>
+                      {document.edited ? `edited ${elapsed(document.updatedAt)}` : dateFormat.format(document.createdAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className={screen.prose}>Nothing tailored for this application yet.</p>
+          )}
+
+          <Link
+            href={`/applications/${application.id}/tailor`}
+            className={`${buttonStyles.button.primary} ${buttonStyles.large}`}
+            style={{ width: '100%', justifyContent: 'center', marginTop: 16 }}
+          >
+            Open tailoring
+          </Link>
+          <p className={pageStyles.tailorHint}>
+            {documents.length > 0 ? 'Generates a new version, never overwrites one' : 'Drafts a CV or cover letter from the experience library'}
+          </p>
         </section>
       </div>
     </div>
