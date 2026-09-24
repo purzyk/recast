@@ -42,7 +42,9 @@ The candidate reads everything you write before sending it, and each block shows
 - If the posting asks for something the library does not cover, leave it out of the text. It will surface as an unmatched requirement, which is more useful to the candidate than a vague claim.
 - In each block's entryIds, list every entry the block draws on. A block that draws on nothing should not exist.
 
-requirements: the posting's distinct requirements (skills, experience, responsibilities), at most 12, most important first. Each phrase must be copied exactly from the posting, a few words long, so it can be located and underlined in the original text. entryIds are the entries that evidence it, or empty if none do.
+- Entry periods are facts about time. A role whose period has ended is past: describe it in the past tense and never as current.
+
+requirements: the posting's distinct requirements (skills, experience, responsibilities), at most 12, most important first. Each phrase must be copied exactly from the posting, a few words long, so it can be located and underlined in the original text. entryIds are the entries that evidence it, or empty if none do. Evidence means the entries show the requirement itself: a neighbouring skill does not count, and a requirement naming several technologies is matched only if the entries cover the ones that matter to it.
 
 Write in the language the posting is written in, including block labels. Plain, specific sentences; no filler such as "passionate", "results-driven" or "team player", and no personality claims the entries do not support. For a list block, put one item per line with no bullet characters.`
 
@@ -107,6 +109,7 @@ export async function tailor(input: TailorInput, onPhase: (phase: TailorPhase) =
         content:
           `<experience_library>\n${renderEntries(input.entries)}\n</experience_library>\n\n` +
           `<posting company="${input.company}" role="${input.role}">\n${input.jobDescription}\n</posting>\n\n` +
+          `Today is ${new Date().toISOString().slice(0, 10)}.\n\n` +
           INSTRUCTIONS[input.kind],
       },
     ],

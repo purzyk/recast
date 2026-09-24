@@ -5,3 +5,6 @@ out
 .env.local
 *.log
 src/generated/
+
+# Demo data: third-party posting text, kept out of the public repo
+prisma/demo/
