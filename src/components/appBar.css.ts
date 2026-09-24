@@ -20,6 +20,9 @@ export const wordmark = style({
   letterSpacing: '-0.015em',
   color: 'inherit',
   textDecoration: 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: sys.space.s2,
 });
 
 export const divider = style({ width: '1px', height: '18px', background: vars.color.border });

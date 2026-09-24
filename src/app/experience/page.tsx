@@ -50,14 +50,12 @@ export default async function ExperiencePage({
   const titles = new Map(entries.map((entry) => [entry.id, entry.title]))
   const byEnd = (a: (typeof entries)[number], b: (typeof entries)[number]) => periodEnd(b.period) - periodEnd(a.period)
   const childrenOf = (id: number) => entries.filter((entry) => entry.parentId === id).sort(byEnd)
-  const nested = new Set<number>()
   const ordered = EXPERIENCE_KINDS.flatMap((type) =>
     entries
       .filter((entry) => entry.kind === type && !(entry.parentId && titles.has(entry.parentId)))
       .sort(type === 'skill' ? (a, b) => a.id - b.id : byEnd)
       .flatMap((entry) => {
         const children = childrenOf(entry.id)
-        children.forEach((child) => nested.add(child.id))
         return [entry, ...children]
       }),
   )
@@ -136,7 +134,7 @@ export default async function ExperiencePage({
                     return (
                       <tr key={entry.id} className={table.row}>
                         <td
-                          className={`${table.td} ${styles.titleCell} ${nested.has(entry.id) ? styles.childCell : ''}`}
+                          className={`${table.td} ${styles.titleCell}`}
                         >
                           <Link href={`/experience/${entry.id}`}>{entry.title}</Link>
                           {meta && <span className={styles.entryMeta}>{meta}</span>}

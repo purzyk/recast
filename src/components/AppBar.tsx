@@ -4,6 +4,7 @@ import * as buttonStyles from './button.css'
 import { ThemeToggle } from './ThemeToggle'
 import { SignOut } from './SignOut'
 import { NavLinks } from './NavLinks'
+import { Logo } from './Logo'
 
 /**
  * 52px, identical on every screen, so navigation never shifts.
@@ -17,6 +18,7 @@ export function AppBar({ tally }: { tally?: { tracked: number; open: number } })
   return (
     <header className={styles.bar}>
       <Link href="/" className={styles.wordmark}>
+        <Logo />
         Recast
       </Link>
       <span className={styles.divider} aria-hidden />

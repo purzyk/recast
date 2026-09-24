@@ -111,6 +111,3 @@ export const entryMeta = style({
   color: vars.color.muted,
 })
 
-/** A project inside a job sits under it, indented, so the library reads in
- *  the same shape as the CV it feeds. */
-export const childCell = style({ paddingLeft: sys.space.s5 })

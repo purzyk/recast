@@ -11,5 +11,5 @@ export const config = {
   //    redirects to Google, forever.
   //  - `signin`: the page unauthenticated users are sent to. Guarding it
   //    would redirect it to itself.
-  matcher: ['/((?!api/auth|signin|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!api/auth|signin|_next/static|_next/image|favicon.ico|icon.svg).*)'],
 }
