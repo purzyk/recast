@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { archivo, plexMono } from './fonts'
+import { archivo, geistMono } from './fonts'
 import { themeScript } from '@/lib/theme'
 import './global.css'
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${archivo.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${archivo.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Before first paint: see src/lib/theme.ts. The class this adds is
             not present in the server-rendered markup, hence

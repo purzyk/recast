@@ -19,7 +19,8 @@ function isActive(href: string, pathname: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-export function NavLinks() {
+/** `bar` sits in the app bar; `menu` is the full-width rows of the phone menu. */
+export function NavLinks({ variant = 'bar' }: { variant?: 'bar' | 'menu' }) {
   const pathname = usePathname()
   return (
     <>
@@ -30,7 +31,13 @@ export function NavLinks() {
             key={link.href}
             href={link.href}
             aria-current={active ? 'page' : undefined}
-            className={`${buttonStyles.button.ghost} ${active ? styles.navActive : ''}`}
+            className={[
+              buttonStyles.button.ghost,
+              variant === 'menu' && styles.menuItem,
+              active && (variant === 'menu' ? styles.menuActive : styles.navActive),
+            ]
+              .filter(Boolean)
+              .join(' ')}
           >
             {link.label}
           </Link>

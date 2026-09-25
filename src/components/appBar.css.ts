@@ -3,6 +3,8 @@ import { style } from '@vanilla-extract/css';
 import { bp, sys, vars } from '../app/theme.css';
 
 export const bar = style({
+  position: 'relative',
+  zIndex: 20,
   flex: 'none',
   height: '52px',
   display: 'flex',
@@ -11,6 +13,7 @@ export const bar = style({
   padding: `0 ${sys.space.s5}`,
   borderBottom: `${sys.border.width} solid ${vars.color.border}`,
   '@media': { [bp.laptop]: { padding: `0 ${sys.space.s4}`, gap: sys.space.s3 } },
+  background: vars.color.bg,
 });
 
 /** Also the link home, so it resets anchor styling. */
@@ -92,3 +95,67 @@ export const navActive = style({
   background: vars.color.surfaceHi,
   boxShadow: `inset 0 -2px 0 ${vars.color.accent}`,
 });
+
+/* ---- responsive: the nav folds into a menu at phone width -------------- */
+
+/** Board, Companies, Experience, theme and sign-out: in the bar on desktop,
+ *  in the menu panel on a phone. */
+export const desktopOnly = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: sys.space.s2,
+  '@media': { [bp.mobile]: { display: 'none' } },
+});
+
+export const mobileMenu = style({
+  display: 'none',
+  '@media': { [bp.mobile]: { display: 'block' } },
+});
+
+export const menuPanel = style({
+  position: 'absolute',
+  top: '100%',
+  left: 0,
+  right: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
+  padding: `${sys.space.s2} ${sys.space.s4} ${sys.space.s3}`,
+  background: vars.color.surface,
+  borderBottom: `${sys.border.width} solid ${vars.color.borderStrong}`,
+  selectors: { '&[hidden]': { display: 'none' } },
+});
+
+export const menuDivider = style({
+  height: '1px',
+  margin: `${sys.space.s1} 0`,
+  background: vars.color.border,
+});
+
+/** A full-width row in the menu panel; composed with the ghost button. */
+// Scoped under the panel: the ghost button's own height and background load
+// later and would otherwise win at equal specificity.
+export const menuItem = style({
+  selectors: {
+    [`${menuPanel} &`]: {
+      width: '100%',
+      height: '40px',
+      justifyContent: 'flex-start',
+      fontSize: sys.fontSize.body,
+    },
+  },
+});
+
+export const menuActive = style({
+  selectors: {
+    [`${menuPanel} &`]: {
+      color: vars.color.text,
+      background: vars.color.surfaceHi,
+      boxShadow: `inset 2px 0 0 ${vars.color.accent}`,
+    },
+  },
+});
+
+/** "Add application" in the bar, just "Add" on a phone. */
+export const longLabel = style({ '@media': { [bp.mobile]: { display: 'none' } } });
+export const shortLabel = style({ display: 'none', '@media': { [bp.mobile]: { display: 'inline' } } });

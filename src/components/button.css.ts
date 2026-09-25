@@ -48,6 +48,16 @@ export const button = styleVariants({
       '&:hover:not(:disabled)': { background: vars.color.danger, color: vars.color.accentInk },
     },
   }],
+  /** Always-available creation in the app bar. Amber in outline only, so the
+   *  filled primary stays unique to the screen's own main action. */
+  accent: [base, {
+    background: 'transparent',
+    color: vars.color.accent,
+    borderColor: vars.color.accent,
+    selectors: {
+      '&:hover:not(:disabled)': { background: vars.color.accent, color: vars.color.accentInk },
+    },
+  }],
   ghost: [base, {
     background: 'transparent',
     color: vars.color.muted,

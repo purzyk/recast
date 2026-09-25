@@ -111,7 +111,7 @@ export const sys = createGlobalTheme(':root', {
   font: {
     /* next/font/google supplies these variables - see STYLING.md */
     sans: 'var(--font-archivo), "Helvetica Neue", Arial, sans-serif',
-    mono: 'var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace',
+    mono: 'var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace',
   },
   fontSize: {
     micro: '10px', // uppercase mono labels, kbd hints
@@ -142,4 +142,6 @@ export const bp = {
   laptop: 'screen and (max-width: 1200px)',
   /** board scrolls inside its own container at a 208px column floor */
   narrow: 'screen and (max-width: 1040px)',
+  /** app bar folds its nav into a menu */
+  mobile: 'screen and (max-width: 720px)',
 } as const;

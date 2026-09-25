@@ -1,7 +1,7 @@
 import { signOut } from '@/auth'
 import * as buttonStyles from './button.css'
 
-export function SignOut() {
+export function SignOut({ className = buttonStyles.button.ghost }: { className?: string }) {
   return (
     <form
       action={async () => {
@@ -9,7 +9,7 @@ export function SignOut() {
         await signOut({ redirectTo: '/signin' })
       }}
     >
-      <button type="submit" className={buttonStyles.button.ghost}>
+      <button type="submit" className={className}>
         Sign out
       </button>
     </form>

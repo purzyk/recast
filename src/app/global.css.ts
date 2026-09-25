@@ -18,6 +18,11 @@ globalStyle('html, body', {
   WebkitFontSmoothing: 'antialiased',
 });
 
+/** The board fits the window and the library scrolls. Without a reserved
+ *  gutter the scrollbar appearing narrows the page and the whole app bar
+ *  jumps sideways when you switch between them. */
+globalStyle('html', { scrollbarGutter: 'stable' });
+
 /** Native controls - scrollbars, date pickers, select popups - follow the
  *  chosen theme, not the OS preference. This has to be bound to the theme
  *  class rather than set once on html: a static `dark light` lets the UA fall

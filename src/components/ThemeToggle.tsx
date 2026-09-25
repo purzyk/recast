@@ -1,30 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import * as buttonStyles from './button.css'
+import * as styles from './themeToggle.css'
 import { srOnly } from '@/styles/utils.css'
 import { THEME_STORAGE_KEY, themeClass, type Theme } from '@/lib/theme'
 
 /**
- * The pre-hydration script has already put the right class on <html>, so this
- * reads that rather than guessing — which also means no state mismatch
- * between server and client markup.
- *
- * Rendering null until mounted avoids claiming a theme the document may not
- * be in: the server cannot know what localStorage says.
+ * Both labels render on the server and CSS shows the one that matches the
+ * class the pre-hydration script put on <html>. Waiting for a mount to learn
+ * the theme would render nothing first, and since every screen mounts its
+ * own app bar, the nav would jump sideways on every navigation.
  */
-export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme | null>(null)
-
-  useEffect(() => {
-    const root = document.documentElement
-    setTheme(root.classList.contains(themeClass.light) ? 'light' : 'dark')
-  }, [])
-
+export function ThemeToggle({ className = buttonStyles.button.ghost }: { className?: string }) {
   function toggle() {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark'
     const root = document.documentElement
-    root.classList.remove(themeClass[theme === 'dark' ? 'dark' : 'light'])
+    const current: Theme = root.classList.contains(themeClass.light) ? 'light' : 'dark'
+    const next: Theme = current === 'dark' ? 'light' : 'dark'
+    root.classList.remove(themeClass[current])
     root.classList.add(themeClass[next])
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next)
@@ -32,16 +24,18 @@ export function ThemeToggle() {
       // Private mode, or storage disabled. The toggle still works for this
       // page view; it just will not be remembered.
     }
-    setTheme(next)
   }
 
-  // Reserve the space so the bar does not reflow when this appears.
-  if (theme === null) return <span aria-hidden style={{ width: 28, height: 28 }} />
-
   return (
-    <button type="button" onClick={toggle} className={buttonStyles.button.ghost}>
-      {theme === 'dark' ? 'Light' : 'Dark'}
-      <span className={srOnly}>Switch to {theme === 'dark' ? 'light' : 'dark'} theme</span>
+    <button type="button" onClick={toggle} className={className}>
+      <span className={styles.whenDark}>
+        <span aria-hidden>Light</span>
+        <span className={srOnly}>Switch to light theme</span>
+      </span>
+      <span className={styles.whenLight}>
+        <span aria-hidden>Dark</span>
+        <span className={srOnly}>Switch to dark theme</span>
+      </span>
     </button>
   )
 }
