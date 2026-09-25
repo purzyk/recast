@@ -48,15 +48,6 @@ export const stepNumber = style({
   selectors: { [`${stepCurrent} &`]: { color: vars.color.accent } },
 })
 
-/** The posting as pasted. Line breaks are the author's structure; keep them. */
-export const posting = style({
-  margin: 0,
-  whiteSpace: 'pre-wrap',
-  fontSize: sys.fontSize.small,
-  lineHeight: 1.6,
-  color: vars.color.muted,
-})
-
 export const outputForm = style({
   display: 'flex',
   flexDirection: 'column',
@@ -177,4 +168,12 @@ export const stickyHeader = style({
   zIndex: 2,
   background: vars.color.bg,
   flexWrap: 'wrap',
+})
+
+/** Separates the destructive header action from the ones that make things. */
+export const actionDivider = style({
+  width: '1px',
+  height: '18px',
+  margin: `0 ${sys.space.s1}`,
+  background: vars.color.border,
 })

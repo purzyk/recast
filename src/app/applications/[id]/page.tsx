@@ -11,6 +11,7 @@ import { StatusBadge } from '@/components/StatusBadge'
 import { StatusGlyph } from '@/components/StatusGlyph'
 import { MoveStatus } from '@/components/MoveStatus'
 import { DeleteApplication } from '@/components/DeleteApplication'
+import { Posting } from '@/components/Posting'
 import { getApplication, chaseHint } from '@/lib/application-detail'
 import { STATUS_LABEL } from '@/lib/status'
 import { elapsed } from '@/lib/elapsed'
@@ -117,7 +118,7 @@ export default async function ApplicationDetailPage({
               <h2 className={screen.paneLabel} style={{ marginTop: 24 }}>
                 Job description
               </h2>
-              <p className={screen.prose}>{application.jobDescription}</p>
+              <Posting text={application.jobDescription} />
             </>
           )}
         </section>

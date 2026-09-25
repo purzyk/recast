@@ -7,7 +7,7 @@ import { AppBar } from '@/components/AppBar'
 import { DocumentBlockView } from '@/components/DocumentBlockView'
 import { CopyDocument } from '@/components/CopyDocument'
 import { DOCUMENT_LABEL, getDocument, getDocuments, toPlainText } from '@/lib/documents'
-import { highlight } from '@/lib/highlight'
+import { Posting } from '@/components/Posting'
 import { deleteDocument } from '../../actions'
 
 export const dynamic = 'force-dynamic'
@@ -35,11 +35,6 @@ export default async function DocumentPage({
   const label = DOCUMENT_LABEL[document.kind]
   const printHref = `/applications/${applicationId}/documents/${document.id}/print`
 
-  const segments = highlight(
-    document.jobDescription ?? '',
-    matched.map((requirement) => requirement.phrase),
-  )
-
   return (
     <div className={styles.shell}>
       <AppBar />
@@ -64,6 +59,7 @@ export default async function DocumentPage({
               Delete this version
             </button>
           </form>
+          <span className={styles.actionDivider} aria-hidden />
           <CopyDocument text={toPlainText(document.content, document.kind)} />
           <Link href={`/applications/${applicationId}/tailor`} className={buttonStyles.button.secondary}>
             Generate another version
@@ -76,7 +72,7 @@ export default async function DocumentPage({
             href={`${printHref}?print`}
             target="_blank"
             rel="noopener"
-            className={`${buttonStyles.button.primary} ${buttonStyles.large}`}
+            className={buttonStyles.button.primary}
           >
             Download PDF
           </a>
@@ -86,17 +82,10 @@ export default async function DocumentPage({
       <div className={`${screen.body} ${styles.twoPane}`}>
         <section className={screen.pane}>
           <h2 className={screen.paneLabel}>Source — matched phrases underlined</h2>
-          <p className={styles.posting}>
-            {segments.map((segment, index) =>
-              segment.matched ? (
-                <mark key={index} className={screen.matched} style={{ background: 'none' }}>
-                  {segment.text}
-                </mark>
-              ) : (
-                segment.text
-              ),
-            )}
-          </p>
+          <Posting
+            text={document.jobDescription ?? ''}
+            phrases={matched.map((requirement) => requirement.phrase)}
+          />
           {requirements.length > 0 && (
             <p className={styles.note}>
               {matched.length} of {requirements.length} requirements matched to an experience entry.

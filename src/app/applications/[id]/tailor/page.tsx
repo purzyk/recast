@@ -8,6 +8,7 @@ import { srOnly } from '@/styles/utils.css'
 import { AppBar } from '@/components/AppBar'
 import { TailorSteps } from '@/components/TailorSteps'
 import { TailorRunner } from '@/components/TailorRunner'
+import { Posting } from '@/components/Posting'
 import { getApplication } from '@/lib/application-detail'
 import { getDocuments, type DocumentKind } from '@/lib/documents'
 import { db } from '@/lib/db'
@@ -52,7 +53,7 @@ export default async function TailorPage({ params }: { params: Promise<{ id: str
         <section className={screen.pane}>
           <h2 className={screen.paneLabel}>Source — job description</h2>
           {hasPosting ? (
-            <p className={styles.posting}>{application.jobDescription}</p>
+            <Posting text={application.jobDescription ?? ''} />
           ) : (
             <form action={saveJobDescription} className={styles.outputForm}>
               <input type="hidden" name="id" value={id} />
