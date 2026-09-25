@@ -8,6 +8,8 @@ const withVanillaExtract = createVanillaExtractPlugin()
 // doesn't need node_modules or the source tree copied in at runtime.
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Next 16 writes AGENTS.md and CLAUDE.md into the repo on every dev start.
+  agentRules: false,
 }
 
 export default withVanillaExtract(nextConfig)

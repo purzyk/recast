@@ -8,3 +8,7 @@ src/generated/
 
 # Demo data: third-party posting text, kept out of the public repo
 prisma/demo/
+
+# Rewritten by next dev/build, different each time
+next-env.d.ts
+*.tsbuildinfo
