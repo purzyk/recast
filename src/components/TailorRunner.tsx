@@ -110,7 +110,7 @@ export function TailorRunner({
           <span className={loadStyles.elapsed}>{formatElapsed(seconds)}</span>
         </div>
         <div className={loadStyles.track}>
-          <i className={loadStyles.sweepBar} />
+          <i className={loadStyles.fill} style={{ width: `${((currentIndex + 0.5) / PHASES.length) * 100}%` }} />
         </div>
         <div className={loadStyles.steps}>
           {PHASES.map((step, index) => (
