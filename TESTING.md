@@ -35,5 +35,5 @@ When a change to the UI is intended:
 1. `npm run test:visual:update`
 2. Look at the changed files in `e2e/__screenshots__/` before committing them.
 
-When CI fails unexpectedly, download the `visual-report` artifact: it has the expected, actual
+When CI fails, download the `visual-report` artifact: it has the expected, actual
 and diff image for each failure.
