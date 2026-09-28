@@ -10,7 +10,6 @@ import { statusTone } from '@/styles/status.css'
 import { srOnly } from '@/styles/utils.css'
 import { STATUS_LABEL } from '@/lib/status'
 import { elapsed } from '@/lib/elapsed'
-import { StatusBadge } from './StatusBadge'
 import { createApplication, findDuplicate, type DuplicateMatch } from '@/app/applications/new/actions'
 
 /**
@@ -29,10 +28,7 @@ export function NewApplicationForm() {
   const [pending, setPending] = useState(false)
 
   useEffect(() => {
-    if (!company.trim() || !role.trim()) {
-      setDuplicate(null)
-      return
-    }
+    if (!company.trim() || !role.trim()) return
     // Debounced: one lookup per pause, not one per keystroke.
     const timer = setTimeout(() => {
       startTransition(async () => {
@@ -78,7 +74,7 @@ export function NewApplicationForm() {
         </div>
       </div>
 
-      {duplicate && (
+      {duplicate && company.trim() && role.trim() && (
         <div className={warnStyles.warning} role="status">
           <span className={warnStyles.label}>Already in your pipeline</span>
           <p className={warnStyles.text}>

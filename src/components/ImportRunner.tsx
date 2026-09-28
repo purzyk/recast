@@ -37,7 +37,6 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
   const running = phase !== null
   useEffect(() => {
     if (!running) return
-    setSeconds(0)
     const started = Date.now()
     const timer = setInterval(() => setSeconds(Math.floor((Date.now() - started) / 1000)), 1000)
     return () => clearInterval(timer)
@@ -46,6 +45,7 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
   async function read(form: HTMLFormElement) {
     setError(null)
     setPreview(null)
+    setSeconds(0)
     setPhase('reading')
     const controller = new AbortController()
     abortRef.current = controller

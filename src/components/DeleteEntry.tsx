@@ -5,8 +5,9 @@ import * as buttonStyles from './button.css'
 import { deleteEntry } from '@/app/experience/actions'
 
 /** Same inline-confirm pattern as deleting an application: two clicks, with
- *  the wording changing in between, and no dialog component to introduce. */
-export function DeleteEntry({ id, title }: { id: number; title: string }) {
+ *  the wording changing in between, and no dialog component to introduce.
+ *  The entry id comes from the form this button submits. */
+export function DeleteEntry({ title }: { title: string }) {
   const [confirming, setConfirming] = useState(false)
 
   if (!confirming) {

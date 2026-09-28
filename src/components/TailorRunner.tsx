@@ -40,7 +40,6 @@ export function TailorRunner({
 
   useEffect(() => {
     if (!running) return
-    setSeconds(0)
     const started = Date.now()
     const timer = setInterval(() => setSeconds(Math.floor((Date.now() - started) / 1000)), 1000)
     return () => clearInterval(timer)
@@ -48,6 +47,7 @@ export function TailorRunner({
 
   async function run() {
     setError(null)
+    setSeconds(0)
     setPhase('reading')
     const controller = new AbortController()
     abortRef.current = controller

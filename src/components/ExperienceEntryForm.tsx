@@ -157,7 +157,7 @@ export function ExperienceEntryForm({
         </button>
         {entry && (
           <span style={{ marginLeft: 'auto' }}>
-            <DeleteEntry id={entry.id} title={entry.title} />
+            <DeleteEntry title={entry.title} />
           </span>
         )}
       </div>
