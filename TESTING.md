@@ -9,7 +9,7 @@
 | `npm run lint`               | ESLint, zero warnings allowed                         | nothing                          |
 | `npm run format:check`       | Prettier                                              | nothing                          |
 
-CI (`.github/workflows/ci.yml`) runs all of them on every branch and pull request.
+CI (`.github/workflows/ci.yml`) runs all of them on every pull request; run it by hand from the Actions tab for a branch without one.
 `deploy.yml` runs the same workflow and deploys only if it passes.
 
 ## How the e2e setup works
