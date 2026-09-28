@@ -5,8 +5,7 @@ export const APP_PORT = 3100
 export const STUB_PORT = 3101
 export const BASE_URL = `http://localhost:${APP_PORT}`
 
-export const DATABASE_URL =
-  process.env.E2E_DATABASE_URL ?? 'postgresql://recast:recast@localhost:5432/recast_test'
+export const DATABASE_URL = process.env.E2E_DATABASE_URL ?? 'postgresql://recast:recast@localhost:5432/recast_test'
 
 export const AUTH_SECRET = 'e2e-only-secret-not-used-anywhere-else'
 

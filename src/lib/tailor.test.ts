@@ -26,14 +26,21 @@ function fakeStream(message: object, events: StreamEvent[] = [], error?: Error) 
     finalMessage: async () => {
       for (const event of events) listener?.(event)
       if (error) throw error
-      return { model: 'claude-test', usage: { input_tokens: 100, output_tokens: 50 }, stop_reason: 'end_turn', ...message }
+      return {
+        model: 'claude-test',
+        usage: { input_tokens: 100, output_tokens: 50 },
+        stop_reason: 'end_turn',
+        ...message,
+      }
     },
   }
 }
 
 const parseError = () => new Anthropic.AnthropicError('Failed to parse structured output: SyntaxError')
 
-const entry = (overrides: Partial<ExperienceEntryRow> & Pick<ExperienceEntryRow, 'id' | 'kind' | 'title'>): ExperienceEntryRow => ({
+const entry = (
+  overrides: Partial<ExperienceEntryRow> & Pick<ExperienceEntryRow, 'id' | 'kind' | 'title'>,
+): ExperienceEntryRow => ({
   period: null,
   body: '',
   links: null,
@@ -43,8 +50,20 @@ const entry = (overrides: Partial<ExperienceEntryRow> & Pick<ExperienceEntryRow,
 })
 
 const entries = [
-  entry({ id: 1, kind: 'work', title: 'Developer — Oldco', period: '2015 – 2018', body: '- Old one\n- Old two\n- Old three\n- Old four' }),
-  entry({ id: 2, kind: 'work', title: 'Frontend Engineer — Newco', period: '2020 – present', body: 'Intro.\n- New one' }),
+  entry({
+    id: 1,
+    kind: 'work',
+    title: 'Developer — Oldco',
+    period: '2015 – 2018',
+    body: '- Old one\n- Old two\n- Old three\n- Old four',
+  }),
+  entry({
+    id: 2,
+    kind: 'work',
+    title: 'Frontend Engineer — Newco',
+    period: '2020 – present',
+    body: 'Intro.\n- New one',
+  }),
   entry({ id: 3, kind: 'project', title: 'Board — the pipeline view', parentId: 2, body: '- Built it' }),
   entry({ id: 4, kind: 'project', title: 'Side project', period: '2024' }),
   entry({ id: 5, kind: 'skill', title: 'Frontend', body: 'React, TypeScript' }),
@@ -76,14 +95,22 @@ const cvOutput = {
   ],
 }
 
-const input = { kind: 'cv' as const, company: 'Acme "Labs"', role: 'Engineer', jobDescription: 'We need React.', entries }
+const input = {
+  kind: 'cv' as const,
+  company: 'Acme "Labs"',
+  role: 'Engineer',
+  jobDescription: 'We need React.',
+  entries,
+}
 
 beforeEach(() => sdk.stream.mockReset())
 
 describe('tailor', () => {
   it('reports phases from the stream, once each', async () => {
     const start = (type: string): StreamEvent => ({ type: 'content_block_start', content_block: { type } })
-    sdk.stream.mockReturnValue(fakeStream({ parsed_output: cvOutput }, [start('thinking'), start('thinking'), start('text')]))
+    sdk.stream.mockReturnValue(
+      fakeStream({ parsed_output: cvOutput }, [start('thinking'), start('thinking'), start('text')]),
+    )
 
     const phases: string[] = []
     await tailor(input, (phase) => phases.push(phase))
@@ -178,8 +205,24 @@ describe('tailor', () => {
     const { content } = await tailor({ ...input, kind: 'coverLetter' }, () => {})
 
     expect(content.blocks).toEqual([
-      { id: 'b1', label: 'Opening', format: 'paragraph', text: 'Dear reader.', sources: [2], edited: false, slot: { type: 'letter' } },
-      { id: 'b2', label: 'Close', format: 'paragraph', text: 'Thanks.', sources: [], edited: false, slot: { type: 'letter' } },
+      {
+        id: 'b1',
+        label: 'Opening',
+        format: 'paragraph',
+        text: 'Dear reader.',
+        sources: [2],
+        edited: false,
+        slot: { type: 'letter' },
+      },
+      {
+        id: 'b2',
+        label: 'Close',
+        format: 'paragraph',
+        text: 'Thanks.',
+        sources: [],
+        edited: false,
+        slot: { type: 'letter' },
+      },
     ])
   })
 
@@ -200,7 +243,9 @@ describe('tailor', () => {
     ['refusal', 'declined'],
     ['end_turn', 'expected shape'],
   ])('explains partial output the SDK could not parse (%s)', async (stopReason, reason) => {
-    sdk.stream.mockReturnValue(fakeStream({}, [{ type: 'message_delta', delta: { stop_reason: stopReason } }], parseError()))
+    sdk.stream.mockReturnValue(
+      fakeStream({}, [{ type: 'message_delta', delta: { stop_reason: stopReason } }], parseError()),
+    )
     const run = tailor(input, () => {})
 
     await expect(run).rejects.toBeInstanceOf(TailorError)

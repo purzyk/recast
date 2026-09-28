@@ -75,8 +75,7 @@ export async function createApplication(formData: FormData) {
     where: { name: { equals: companyName, mode: 'insensitive' } },
     select: { id: true },
   })
-  const companyId =
-    existing?.id ?? (await db.company.create({ data: { name: companyName }, select: { id: true } })).id
+  const companyId = existing?.id ?? (await db.company.create({ data: { name: companyName }, select: { id: true } })).id
 
   const created = await db.application.create({
     data: {

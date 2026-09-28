@@ -2,10 +2,10 @@
  * Global resets and the two rules every screen depends on.
  * Import once, in the root layout.
  */
-import { globalStyle } from '@vanilla-extract/css';
-import { darkTheme, lightTheme, sys, vars } from './theme.css';
+import { globalStyle } from '@vanilla-extract/css'
+import { darkTheme, lightTheme, sys, vars } from './theme.css'
 
-globalStyle('*, *::before, *::after', { boxSizing: 'border-box' });
+globalStyle('*, *::before, *::after', { boxSizing: 'border-box' })
 
 globalStyle('html, body', {
   margin: 0,
@@ -16,46 +16,46 @@ globalStyle('html, body', {
   fontSize: sys.fontSize.body,
   lineHeight: 1.5,
   WebkitFontSmoothing: 'antialiased',
-});
+})
 
 /** The board fits the window and the library scrolls. Without a reserved
  *  gutter the scrollbar appearing narrows the page and the whole app bar
  *  jumps sideways when you switch between them. */
-globalStyle('html', { scrollbarGutter: 'stable' });
+globalStyle('html', { scrollbarGutter: 'stable' })
 
 /** Native controls - scrollbars, date pickers, select popups - follow the
  *  chosen theme, not the OS preference. This has to be bound to the theme
  *  class rather than set once on html: a static `dark light` lets the UA fall
  *  back to the OS setting, so picking light on a dark-set machine leaves you
  *  with a light app and dark scrollbars. */
-globalStyle(`.${darkTheme}`, { colorScheme: 'dark' });
-globalStyle(`.${lightTheme}`, { colorScheme: 'light' });
+globalStyle(`.${darkTheme}`, { colorScheme: 'dark' })
+globalStyle(`.${lightTheme}`, { colorScheme: 'light' })
 
 /** Tables do not inherit colour or font in quirks mode, and the failure is
  *  silent. Belt and braces - it costs nothing. */
-globalStyle('table', { color: 'inherit', fontFamily: 'inherit', borderCollapse: 'collapse' });
+globalStyle('table', { color: 'inherit', fontFamily: 'inherit', borderCollapse: 'collapse' })
 
 /** One focus treatment across the app. Keyboard only; never removed. */
 globalStyle(':focus-visible', {
   outline: `2px solid ${vars.color.accent}`,
   outlineOffset: '2px',
-});
+})
 
-globalStyle('button, input, select, textarea', { font: 'inherit' });
+globalStyle('button, input, select, textarea', { font: 'inherit' })
 
 /** Links in content inherit the surrounding colour and underline only on
  *  hover. The browser default — blue, always underlined — fights every
  *  palette in the token set. Navigation links carry button classes and opt
  *  out of the underline entirely. */
-globalStyle('a', { color: 'inherit', textDecoration: 'none' });
+globalStyle('a', { color: 'inherit', textDecoration: 'none' })
 globalStyle('p a, dd a, li a:not([class])', {
   textDecoration: 'underline',
   textUnderlineOffset: '2px',
   textDecorationColor: vars.color.border,
-});
+})
 globalStyle('p a:hover, dd a:hover, li a:not([class]):hover', {
   textDecorationColor: vars.color.accent,
-});
+})
 
 globalStyle('*', {
   '@media': {
@@ -65,4 +65,4 @@ globalStyle('*', {
       transitionDuration: '0.01ms !important',
     },
   },
-});
+})

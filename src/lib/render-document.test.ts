@@ -35,7 +35,16 @@ const entries: ExperienceEntryRow[] = [
     parentId: 1,
     updatedAt: new Date(0),
   },
-  { id: 3, kind: 'project', title: 'Tool', period: '2025', body: '', links: null, parentId: null, updatedAt: new Date(0) },
+  {
+    id: 3,
+    kind: 'project',
+    title: 'Tool',
+    period: '2025',
+    body: '',
+    links: null,
+    parentId: null,
+    updatedAt: new Date(0),
+  },
 ]
 
 const block = (id: string, overrides: Partial<DocumentBlock>): DocumentBlock => ({

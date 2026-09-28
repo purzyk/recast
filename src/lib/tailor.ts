@@ -111,7 +111,9 @@ function renderEntries(entries: ExperienceEntryRow[]): string {
   const titles = new Map(entries.map((entry) => [entry.id, entry.title]))
   return entries
     .map((entry) => {
-      const parent = entry.parentId ? ` parent="${entry.parentId}" parentTitle="${attr(titles.get(entry.parentId) ?? '')}"` : ''
+      const parent = entry.parentId
+        ? ` parent="${entry.parentId}" parentTitle="${attr(titles.get(entry.parentId) ?? '')}"`
+        : ''
       const period = entry.period ? ` period="${attr(entry.period)}"` : ''
       return `<entry id="${entry.id}" kind="${entry.kind}"${period}${parent}>\n<title>${entry.title}</title>\n${entry.body}\n</entry>`
     })
@@ -192,7 +194,14 @@ function cvBlocks(output: z.infer<typeof CvOutput>, entries: ExperienceEntryRow[
     // bullets as written rather than disappearing from the history.
     const fallback = !planned || sections.length === 0
     const usable = fallback
-      ? [{ projectId: 0, bullets: splitBody(job.body).bullets.slice(0, 3).map((text) => ({ text, entryIds: [job.id] })) }]
+      ? [
+          {
+            projectId: 0,
+            bullets: splitBody(job.body)
+              .bullets.slice(0, 3)
+              .map((text) => ({ text, entryIds: [job.id] })),
+          },
+        ]
       : sections
 
     // Project subsections first, the job's own bullets after them.
@@ -205,7 +214,11 @@ function cvBlocks(output: z.infer<typeof CvOutput>, entries: ExperienceEntryRow[
         label: project ? `${organisation(job.title)} · ${shortTitle(project.title)}` : organisation(job.title),
         format: 'list',
         text: bullets.join('\n'),
-        sources: cite([job.id, ...(project ? [project.id] : []), ...section.bullets.flatMap((bullet) => bullet.entryIds)]),
+        sources: cite([
+          job.id,
+          ...(project ? [project.id] : []),
+          ...section.bullets.flatMap((bullet) => bullet.entryIds),
+        ]),
         slot: { type: 'job', entryId: job.id, projectId: project?.id ?? null },
       })
     }
@@ -256,25 +269,30 @@ export async function tailor(
   const known = new Set(input.entries.map((entry) => entry.id))
 
   onPhase('reading')
-  const stream = getClient().beta.messages.stream({
-    model: MODEL,
-    max_tokens: 32000,
-    // A classifier decline is re-run on Anthropic's recommended fallback
-    // model instead of failing the request.
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    system: SYSTEM[input.kind],
-    output_config: { format: input.kind === 'cv' ? betaZodOutputFormat(CvOutput) : betaZodOutputFormat(LetterOutput) },
-    messages: [
-      {
-        role: 'user',
-        content:
-          `<experience_library>\n${renderEntries(input.entries)}\n</experience_library>\n\n` +
-          `<posting company="${attr(input.company)}" role="${attr(input.role)}">\n${input.jobDescription}\n</posting>\n\n` +
-          `Today is ${new Date().toISOString().slice(0, 10)}.`,
+  const stream = getClient().beta.messages.stream(
+    {
+      model: MODEL,
+      max_tokens: 32000,
+      // A classifier decline is re-run on Anthropic's recommended fallback
+      // model instead of failing the request.
+      betas: ['server-side-fallback-2026-07-01'],
+      fallbacks: 'default',
+      system: SYSTEM[input.kind],
+      output_config: {
+        format: input.kind === 'cv' ? betaZodOutputFormat(CvOutput) : betaZodOutputFormat(LetterOutput),
       },
-    ],
-  }, { signal })
+      messages: [
+        {
+          role: 'user',
+          content:
+            `<experience_library>\n${renderEntries(input.entries)}\n</experience_library>\n\n` +
+            `<posting company="${attr(input.company)}" role="${attr(input.role)}">\n${input.jobDescription}\n</posting>\n\n` +
+            `Today is ${new Date().toISOString().slice(0, 10)}.`,
+        },
+      ],
+    },
+    { signal },
+  )
 
   let phase: TailorPhase = 'reading'
   const advance = (next: TailorPhase) => {
@@ -294,7 +312,8 @@ export async function tailor(
 
   const fail = (reason: string | null) => {
     if (reason === 'refusal') return new TailorError('The model declined this request. Nothing was saved.')
-    if (reason === 'max_tokens') return new TailorError('The response was cut off before it finished. Nothing was saved.')
+    if (reason === 'max_tokens')
+      return new TailorError('The response was cut off before it finished. Nothing was saved.')
     return new TailorError('The response did not match the expected shape. Nothing was saved.')
   }
 

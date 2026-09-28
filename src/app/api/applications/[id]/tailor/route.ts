@@ -67,7 +67,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         if (!jobDescription) throw new TailorError('Add a job description first. Tailoring reads it.')
 
         const entries = await getEntries()
-        if (entries.length === 0) throw new TailorError('The experience library is empty, so there is nothing to draw from.')
+        if (entries.length === 0)
+          throw new TailorError('The experience library is empty, so there is nothing to draw from.')
 
         const result = await tailor(
           { kind, company: application.company.name, role: application.role, jobDescription, entries },

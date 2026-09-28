@@ -150,7 +150,9 @@ function renderCv(blocks: DocumentBlock[], profile: Profile, entries: Map<number
     const rows = projects.map((block) => {
       const entry = block.slot?.type === 'project' ? entries.get(block.slot.entryId) : undefined
       const name = entry ? escape(entry.title) : inline(block.label)
-      const period = entry?.period ? ` <span style="font-weight:400;color:#5a6b7a">(${escape(entry.period)})</span>` : ''
+      const period = entry?.period
+        ? ` <span style="font-weight:400;color:#5a6b7a">(${escape(entry.period)})</span>`
+        : ''
       const links = parseLinks(entry?.links ?? null)
         .map((item) => link(item.url, item.label))
         .join('')
@@ -161,20 +163,16 @@ function renderCv(blocks: DocumentBlock[], profile: Profile, entries: Map<number
 
   // Blocks from before the template existed have no slot; they still render.
   for (const block of blocks.filter((item) => !item.slot)) {
-    out.push(`<h2>${escape(block.label)}</h2>${block.format === 'list' ? list(block.text) : `<p>${inline(block.text)}</p>`}`)
+    out.push(
+      `<h2>${escape(block.label)}</h2>${block.format === 'list' ? list(block.text) : `<p>${inline(block.text)}</p>`}`,
+    )
   }
 
   if (profile.education) out.push(`<h2>Education</h2><p class="edu">${inline(profile.education)}</p>`)
   return out.join('\n')
 }
 
-function renderLetter(
-  blocks: DocumentBlock[],
-  profile: Profile,
-  company: string,
-  role: string,
-  date: Date,
-): string {
+function renderLetter(blocks: DocumentBlock[], profile: Profile, company: string, role: string, date: Date): string {
   const when = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(date)
   const paragraphs = blocks.map((block) => `<p>${inline(block.text)}</p>`).join('\n')
   return `${header(profile, profile.headline)}

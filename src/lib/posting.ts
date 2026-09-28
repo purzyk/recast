@@ -73,8 +73,7 @@ export function parsePosting(text: string): PostingBlock[] {
       pushTags(group)
     } else {
       if (label) blocks.push({ kind: 'heading', text: label })
-      const prose =
-        !section || PROSE_SECTION.test(section) || group.some((line) => line.length > LIST_ITEM_MAX)
+      const prose = !section || PROSE_SECTION.test(section) || group.some((line) => line.length > LIST_ITEM_MAX)
       if (group.length > 1 && !prose) blocks.push({ kind: 'list', items: group })
       else for (const line of group) blocks.push({ kind: 'paragraph', text: line })
     }

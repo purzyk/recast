@@ -110,4 +110,3 @@ export const entryMeta = style({
   fontWeight: 400,
   color: vars.color.muted,
 })
-

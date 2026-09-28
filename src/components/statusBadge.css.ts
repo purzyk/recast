@@ -1,6 +1,6 @@
-import { style } from '@vanilla-extract/css';
-import { sys, vars } from '../app/theme.css';
-import { tone } from '../styles/status.css';
+import { style } from '@vanilla-extract/css'
+import { sys, vars } from '../app/theme.css'
+import { tone } from '../styles/status.css'
 
 /** Put statusTone[status] on this element, or on any ancestor. */
 export const badge = style({
@@ -18,9 +18,9 @@ export const badge = style({
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
   color: vars.color.text,
-});
+})
 
-export const badgeLarge = style({ height: '24px', fontSize: sys.fontSize.meta });
+export const badgeLarge = style({ height: '24px', fontSize: sys.fontSize.meta })
 
 /** The glyph. Always present - the badge never ships as colour plus text. */
-export const glyph = style({ display: 'flex', color: tone, marginLeft: '7px' });
+export const glyph = style({ display: 'flex', color: tone, marginLeft: '7px' })

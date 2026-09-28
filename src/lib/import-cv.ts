@@ -82,22 +82,26 @@ export async function importCv(
         ]
       : [{ type: 'text', text: `<cv>\n${source.text}\n</cv>\n\nStructure the CV above.` }]
 
-  const stream = getClient().beta.messages.stream({
-    model: MODEL,
-    max_tokens: 32000,
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    system: SYSTEM,
-    output_config: { format: betaZodOutputFormat(ImportPreview) },
-    messages: [{ role: 'user', content }],
-  }, { signal })
+  const stream = getClient().beta.messages.stream(
+    {
+      model: MODEL,
+      max_tokens: 32000,
+      betas: ['server-side-fallback-2026-07-01'],
+      fallbacks: 'default',
+      system: SYSTEM,
+      output_config: { format: betaZodOutputFormat(ImportPreview) },
+      messages: [{ role: 'user', content }],
+    },
+    { signal },
+  )
 
   let phase: TailorPhase = 'reading'
   let stopReason: string | null = null
   stream.on('streamEvent', (event) => {
     if (event.type === 'message_delta') stopReason = event.delta.stop_reason
     if (event.type !== 'content_block_start') return
-    const next = event.content_block.type === 'thinking' ? 'matching' : event.content_block.type === 'text' ? 'drafting' : phase
+    const next =
+      event.content_block.type === 'thinking' ? 'matching' : event.content_block.type === 'text' ? 'drafting' : phase
     if (next !== phase) {
       phase = next
       onPhase(next)
@@ -126,7 +130,10 @@ export async function importCv(
     ...preview,
     profile: {
       ...preview.profile,
-      quotes: preview.profile.quotes.map((quote) => ({ ...quote, attribution: quote.attribution.replace(/^[\s—–-]+/, '') })),
+      quotes: preview.profile.quotes.map((quote) => ({
+        ...quote,
+        attribution: quote.attribution.replace(/^[\s—–-]+/, ''),
+      })),
     },
     // A parent must be a job that exists; anything else becomes standalone.
     entries: preview.entries.map((entry) => ({

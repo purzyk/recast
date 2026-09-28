@@ -11,10 +11,7 @@ export const dynamic = 'force-dynamic'
  * it has to look like the paper CV, not like Recast. ?print opens the print
  * dialog on load, which is what the "Download PDF" button links to.
  */
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string; documentId: string }> },
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string; documentId: string }> }) {
   const session = await auth()
   if (!session?.user) return new Response('Unauthorized', { status: 401 })
 

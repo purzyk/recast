@@ -4,7 +4,10 @@ import { SEED } from './seed'
 
 async function openTailoring(page: Page, company: string) {
   await page.goto('/')
-  await page.getByRole('link', { name: new RegExp(company) }).first().click()
+  await page
+    .getByRole('link', { name: new RegExp(company) })
+    .first()
+    .click()
   await page.getByRole('link', { name: 'Open tailoring' }).click()
   await expect(page).toHaveURL(/\/tailor$/)
 }
@@ -50,7 +53,10 @@ test('the print preview renders the CV from the profile and entries', async ({ p
   const [preview] = await Promise.all([page.waitForEvent('popup'), page.getByRole('link', { name: 'Preview' }).click()])
   await expect(preview).toHaveTitle('Alex-Tester-CV-Northwind-Labs')
   await expect(preview.getByRole('heading', { level: 1, name: 'ALEX TESTER' })).toBeVisible()
-  await expect(preview.getByRole('link', { name: 'Harbour Digital' })).toHaveAttribute('href', 'https://harbour.example')
+  await expect(preview.getByRole('link', { name: 'Harbour Digital' })).toHaveAttribute(
+    'href',
+    'https://harbour.example',
+  )
   await expect(preview.getByText('Harbour Portal')).toBeVisible()
 })
 
@@ -59,7 +65,9 @@ test('generating a cover letter', async ({ page }) => {
   await page.getByText('Cover letter', { exact: true }).click()
   await page.getByRole('button', { name: /^Generate Cover letter v\d+$/ }).click()
 
-  await expect(page.getByRole('heading', { level: 1, name: `Cover letter for ${SEED.tailoring.company}` })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { level: 1, name: `Cover letter for ${SEED.tailoring.company}` }),
+  ).toBeVisible()
   await expect(page.getByText('Stub evidence paragraph.')).toBeVisible()
 })
 

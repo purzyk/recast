@@ -12,9 +12,7 @@ import { updateBlock } from '@/app/applications/[id]/actions'
  *  printed CV emphasises. Rendered here so review shows what will print. */
 function Bold({ text }: { text: string }) {
   return (
-    <>
-      {text.split(/\*\*(.+?)\*\*/g).map((part, index) => (index % 2 ? <strong key={index}>{part}</strong> : part))}
-    </>
+    <>{text.split(/\*\*(.+?)\*\*/g).map((part, index) => (index % 2 ? <strong key={index}>{part}</strong> : part))}</>
   )
 }
 

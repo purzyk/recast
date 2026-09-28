@@ -51,4 +51,3 @@ export interface DocumentContent {
   blocks: DocumentBlock[]
   requirements: Requirement[]
 }
-

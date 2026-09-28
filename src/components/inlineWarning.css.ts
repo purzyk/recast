@@ -9,9 +9,9 @@
  * Put statusTone[existing.status] on the record row so it carries the same
  * spine colour it has on the board.
  */
-import { style } from '@vanilla-extract/css';
-import { sys, vars } from '../app/theme.css';
-import { tone } from '../styles/status.css';
+import { style } from '@vanilla-extract/css'
+import { sys, vars } from '../app/theme.css'
+import { tone } from '../styles/status.css'
 
 export const warning = style({
   display: 'flex',
@@ -21,7 +21,7 @@ export const warning = style({
   border: `${sys.border.width} solid ${vars.color.borderStrong}`,
   borderLeft: `2px solid ${vars.color.accent}`,
   borderRadius: sys.radius.sm,
-});
+})
 
 export const label = style({
   fontFamily: sys.font.mono,
@@ -29,9 +29,9 @@ export const label = style({
   letterSpacing: '0.09em',
   textTransform: 'uppercase',
   color: vars.color.accent,
-});
+})
 
-export const text = style({ margin: 0, fontSize: sys.fontSize.small, color: vars.color.muted });
+export const text = style({ margin: 0, fontSize: sys.fontSize.small, color: vars.color.muted })
 
 export const record = style({
   display: 'flex',
@@ -42,15 +42,15 @@ export const record = style({
   border: `${sys.border.width} solid ${vars.color.border}`,
   borderLeft: `2px solid ${tone}`,
   borderRadius: sys.radius.sm,
-});
+})
 
-export const recordCompany = style({ fontSize: sys.fontSize.body, fontWeight: 600 });
-export const recordRole = style({ fontSize: sys.fontSize.small, color: vars.color.muted });
+export const recordCompany = style({ fontSize: sys.fontSize.body, fontWeight: 600 })
+export const recordRole = style({ fontSize: sys.fontSize.small, color: vars.color.muted })
 export const recordMeta = style({
   marginLeft: 'auto',
   fontFamily: sys.font.mono,
   fontSize: sys.fontSize.meta,
   color: vars.color.muted,
-});
+})
 
-export const actions = style({ display: 'flex', gap: sys.space.s2 });
+export const actions = style({ display: 'flex', gap: sys.space.s2 })

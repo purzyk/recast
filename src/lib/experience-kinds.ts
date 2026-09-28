@@ -21,4 +21,3 @@ export const KIND_LABEL_ONE: Record<ExperienceKind, string> = {
 export function isExperienceKind(value: string): value is ExperienceKind {
   return (EXPERIENCE_KINDS as readonly string[]).includes(value)
 }
-

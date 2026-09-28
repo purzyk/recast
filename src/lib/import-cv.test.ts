@@ -49,7 +49,13 @@ const preview: Preview = {
     education: '',
     quotes: [{ entryTitle: 'e1', text: 'Great work.', attribution: ' — A. Manager' }],
   },
-  entries: [entry('e1', 'work'), entry('e2', 'project', 'e1'), entry('e3', 'project', 'e4'), entry('e4', 'skill'), entry('e5', 'project', 'e9')],
+  entries: [
+    entry('e1', 'work'),
+    entry('e2', 'project', 'e1'),
+    entry('e3', 'project', 'e4'),
+    entry('e4', 'skill'),
+    entry('e5', 'project', 'e9'),
+  ],
 }
 
 beforeEach(() => sdk.stream.mockReset())
@@ -80,7 +86,10 @@ describe('importCv', () => {
     await importCv({ type: 'pdf', base64: 'JVBERi0=' }, () => {})
 
     const [document] = sdk.stream.mock.calls[0]![0].messages[0].content
-    expect(document).toEqual({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: 'JVBERi0=' } })
+    expect(document).toEqual({
+      type: 'document',
+      source: { type: 'base64', media_type: 'application/pdf', data: 'JVBERi0=' },
+    })
   })
 
   it.each([

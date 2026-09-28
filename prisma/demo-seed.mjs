@@ -21,15 +21,37 @@ const PLAN = {
   12: { history: [['saved', 2]] },
   10: { history: [['saved', 1]] },
   3: { history: [['saved', 4]] },
-  1: { history: [['saved', 12], ['applied', 9]] },
-  7: { history: [['saved', 8], ['applied', 6]] },
-  2: { history: [['saved', 6], ['applied', 3]] },
+  1: {
+    history: [
+      ['saved', 12],
+      ['applied', 9],
+    ],
+  },
+  7: {
+    history: [
+      ['saved', 8],
+      ['applied', 6],
+    ],
+  },
+  2: {
+    history: [
+      ['saved', 6],
+      ['applied', 3],
+    ],
+  },
   4: {
-    history: [['saved', 18], ['applied', 16]],
+    history: [
+      ['saved', 18],
+      ['applied', 16],
+    ],
     notes: [[16, 'Asks for five years of Node.js on the backend. Applied for the React side anyway.']],
   },
   6: {
-    history: [['saved', 20], ['applied', 17], ['interview', 5]],
+    history: [
+      ['saved', 20],
+      ['applied', 17],
+      ['interview', 5],
+    ],
     contact: 5,
     notes: [
       [17, 'WordPress block themes and WooCommerce are the whole job. Led with Grid Architekci and Staropolanka.'],
@@ -37,16 +59,28 @@ const PLAN = {
     ],
   },
   8: {
-    history: [['saved', 15], ['applied', 13], ['interview', 2]],
+    history: [
+      ['saved', 15],
+      ['applied', 13],
+      ['interview', 2],
+    ],
     contact: 2,
     notes: [[2, 'Recruiter screen done. Technical interview with the team lead next week.']],
   },
   5: {
-    history: [['saved', 25], ['applied', 23], ['rejected', 14]],
+    history: [
+      ['saved', 25],
+      ['applied', 23],
+      ['rejected', 14],
+    ],
     notes: [[14, 'Rejected: they wanted hands-on Oracle NetSuite experience.']],
   },
   9: {
-    history: [['saved', 22], ['applied', 21], ['rejected', 10]],
+    history: [
+      ['saved', 22],
+      ['applied', 21],
+      ['rejected', 10],
+    ],
     notes: [[10, 'Rejected: the role is mostly .NET on the backend.']],
   },
 }
@@ -117,8 +151,11 @@ for (const posting of postings) {
 
 console.log(
   'seeded:',
-  await db.application.count(), 'applications,',
-  await db.company.count(), 'companies,',
-  await db.experienceEntry.count(), 'experience entries',
+  await db.application.count(),
+  'applications,',
+  await db.company.count(),
+  'companies,',
+  await db.experienceEntry.count(),
+  'experience entries',
 )
 await db.$disconnect()

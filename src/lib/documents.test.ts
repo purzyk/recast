@@ -40,7 +40,9 @@ describe('toPlainText', () => {
   }
 
   it('heads each CV block with its label and dashes list items', () => {
-    expect(toPlainText(content, 'cv')).toBe('Summary\n\nA frontend engineer.\n\nTalksome\n\n- Built Compass\n- Wrote tests')
+    expect(toPlainText(content, 'cv')).toBe(
+      'Summary\n\nA frontend engineer.\n\nTalksome\n\n- Built Compass\n- Wrote tests',
+    )
   })
 
   it('leaves cover letter labels out', () => {

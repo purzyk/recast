@@ -10,9 +10,7 @@ const MAX_PDF_BYTES = 10 * 1024 * 1024
 const MAX_TEXT_CHARS = 60_000
 
 export type ImportEvent =
-  | { type: 'phase'; phase: TailorPhase }
-  | { type: 'done'; preview: ImportPreview }
-  | { type: 'error'; message: string }
+  { type: 'phase'; phase: TailorPhase } | { type: 'done'; preview: ImportPreview } | { type: 'error'; message: string }
 
 function describe(error: unknown): string {
   if (error instanceof ImportError) return error.message
@@ -79,6 +77,10 @@ export async function POST(request: Request) {
   })
 
   return new Response(stream, {
-    headers: { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no' },
+    headers: {
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Accel-Buffering': 'no',
+    },
   })
 }

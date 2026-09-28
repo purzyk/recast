@@ -50,9 +50,31 @@ export async function seed(connectionString: string) {
       })
     }
 
-    await application(SEED.tailoring.company, SEED.tailoring.role, [['saved', 5], ['applied', 3]], POSTING)
-    await application(SEED.interview.company, SEED.interview.role, [['saved', 20], ['applied', 18], ['interview', 9]], 'React and testing.')
-    await application(SEED.refusal.company, SEED.refusal.role, [['saved', 2]], 'A posting the stub refuses. [stub:refuse]')
+    await application(
+      SEED.tailoring.company,
+      SEED.tailoring.role,
+      [
+        ['saved', 5],
+        ['applied', 3],
+      ],
+      POSTING,
+    )
+    await application(
+      SEED.interview.company,
+      SEED.interview.role,
+      [
+        ['saved', 20],
+        ['applied', 18],
+        ['interview', 9],
+      ],
+      'React and testing.',
+    )
+    await application(
+      SEED.refusal.company,
+      SEED.refusal.role,
+      [['saved', 2]],
+      'A posting the stub refuses. [stub:refuse]',
+    )
 
     const harbour = await db.experienceEntry.create({
       data: {
@@ -66,8 +88,19 @@ export async function seed(connectionString: string) {
     await db.experienceEntry.createMany({
       data: [
         { kind: 'project', title: 'Harbour Portal', body: '- Built the customer portal', parentId: harbour.id },
-        { kind: 'work', title: 'Web Developer — Ferncliff Studio', period: '2017 – 2021', body: '- Built marketing sites\n- Ran accessibility audits' },
-        { kind: 'project', title: 'Tide Tracker', period: '2024', body: 'A tide table app.', links: 'Repo https://github.com/example/tides' },
+        {
+          kind: 'work',
+          title: 'Web Developer — Ferncliff Studio',
+          period: '2017 – 2021',
+          body: '- Built marketing sites\n- Ran accessibility audits',
+        },
+        {
+          kind: 'project',
+          title: 'Tide Tracker',
+          period: '2024',
+          body: 'A tide table app.',
+          links: 'Repo https://github.com/example/tides',
+        },
         { kind: 'skill', title: 'Frontend', body: 'React, TypeScript, Next.js' },
         { kind: 'skill', title: 'Testing', body: 'Playwright, Vitest' },
       ],

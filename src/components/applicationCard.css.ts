@@ -2,9 +2,9 @@
  * The card is a link, not an article: it opens the detail view, so it has to
  * be keyboard reachable and take the global focus ring.
  */
-import { style } from '@vanilla-extract/css';
-import { bp, sys, vars } from '../app/theme.css';
-import { tone } from '../styles/status.css';
+import { style } from '@vanilla-extract/css'
+import { bp, sys, vars } from '../app/theme.css'
+import { tone } from '../styles/status.css'
 
 export const card = style({
   display: 'flex',
@@ -20,7 +20,7 @@ export const card = style({
     '&:hover': { background: vars.color.surfaceHi, borderColor: tone },
     '&:focus-visible': { background: vars.color.surfaceHi, borderColor: tone },
   },
-});
+})
 
 /** 2px of the column's status colour, so a card taken out of context still
  *  says where it belongs. 65% at rest keeps the board quiet. */
@@ -34,16 +34,16 @@ export const spine = style({
     [`${card}:hover &`]: { opacity: 1 },
     [`${card}:focus-visible &`]: { opacity: 1 },
   },
-});
+})
 
 export const body = style({
   flex: 1,
   minWidth: 0,
   padding: `${sys.space.s2} ${sys.space.s3} 9px`,
   '@media': { [bp.laptop]: { padding: `7px ${sys.space.s2} 8px` } },
-});
+})
 
-export const top = style({ display: 'flex', alignItems: 'flex-start', gap: sys.space.s2 });
+export const top = style({ display: 'flex', alignItems: 'flex-start', gap: sys.space.s2 })
 
 /** The scan target. Never truncates before the role does. */
 export const company = style({
@@ -56,7 +56,7 @@ export const company = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-});
+})
 
 export const role = style({
   margin: '1px 0 0',
@@ -70,7 +70,7 @@ export const role = style({
   /* Clamp alone, without nowrap: -webkit-box already constrains to one line
    * here, and adding nowrap can suppress the ellipsis in some engines. */
   '@media': { [bp.laptop]: { WebkitLineClamp: 1 } },
-});
+})
 
 /** Time in this column, not the date it was created. */
 export const age = style({
@@ -80,7 +80,7 @@ export const age = style({
   fontVariantNumeric: 'tabular-nums',
   letterSpacing: '-0.01em',
   color: vars.color.muted,
-});
+})
 
 /** Shown only when a posting URL was saved - that is what makes it worth
  *  reading. Pair it with visually hidden text. */
@@ -96,7 +96,7 @@ export const externalMark = style({
     [`${card}:hover &`]: { opacity: 1, color: vars.color.text },
     [`${card}:focus-visible &`]: { opacity: 1, color: vars.color.text },
   },
-});
+})
 
 /** The foot row: time in column on the left, generated documents on the
  *  right, so a tailored application is recognisable without opening it. */
@@ -105,9 +105,9 @@ export const foot = style({
   alignItems: 'baseline',
   gap: sys.space.s2,
   margin: `${sys.space.s2} 0 0`,
-});
+})
 
-export const docs = style({ marginLeft: 'auto', display: 'flex', gap: sys.space.s1 });
+export const docs = style({ marginLeft: 'auto', display: 'flex', gap: sys.space.s1 })
 
 export const docBadge = style({
   padding: `1px ${sys.space.s1}`,
@@ -118,4 +118,4 @@ export const docBadge = style({
   letterSpacing: '0.04em',
   color: vars.color.text,
   whiteSpace: 'nowrap',
-});
+})

@@ -1,6 +1,6 @@
 /** Companies index, status history, the experience library. */
-import { style } from '@vanilla-extract/css';
-import { sys, vars } from '../app/theme.css';
+import { style } from '@vanilla-extract/css'
+import { sys, vars } from '../app/theme.css'
 
 export const table = style({
   width: '100%',
@@ -8,7 +8,7 @@ export const table = style({
   color: vars.color.text,
   fontFamily: sys.font.sans,
   fontSize: sys.fontSize.body,
-});
+})
 
 export const th = style({
   padding: `0 ${sys.space.s3} ${sys.space.s2}`,
@@ -20,13 +20,13 @@ export const th = style({
   textTransform: 'uppercase',
   textAlign: 'left',
   color: vars.color.muted,
-});
+})
 
 export const row = style({
   selectors: {
     '&:hover': { background: vars.color.surfaceHi },
   },
-});
+})
 
 export const td = style({
   padding: `9px ${sys.space.s3}`,
@@ -36,7 +36,7 @@ export const td = style({
     /* The last row keeps the panel's own edge rather than doubling it. */
     [`${row}:last-child &`]: { borderBottom: 0 },
   },
-});
+})
 
 /** Numeric and date cells. Right aligned, mono, tabular. Apply to the th too,
  *  or the header drifts off its column. */
@@ -47,7 +47,7 @@ export const num = style({
   textAlign: 'right',
   whiteSpace: 'nowrap',
   color: vars.color.muted,
-});
+})
 
-export const primaryCell = style({ fontWeight: 600 });
-export const dimCell = style({ color: vars.color.muted, fontSize: sys.fontSize.small });
+export const primaryCell = style({ fontWeight: 600 })
+export const dimCell = style({ color: vars.color.muted, fontSize: sys.fontSize.small })

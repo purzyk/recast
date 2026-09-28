@@ -60,9 +60,7 @@ export async function getBoard(): Promise<BoardColumn[]> {
   // database cannot order by without a correlated subquery.
   return STATUS_ORDER.map((status) => ({
     status,
-    cards: cards
-      .filter((card) => card.status === status)
-      .sort((a, b) => b.since.getTime() - a.since.getTime()),
+    cards: cards.filter((card) => card.status === status).sort((a, b) => b.since.getTime() - a.since.getTime()),
   }))
 }
 

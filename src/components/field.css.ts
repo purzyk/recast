@@ -1,12 +1,12 @@
 /** Text, textarea, select, date - one control, four shapes. */
-import { style } from '@vanilla-extract/css';
-import { sys, vars } from '../app/theme.css';
+import { style } from '@vanilla-extract/css'
+import { sys, vars } from '../app/theme.css'
 
-export const field = style({ display: 'flex', flexDirection: 'column', gap: sys.space.s1 });
+export const field = style({ display: 'flex', flexDirection: 'column', gap: sys.space.s1 })
 
 /** Marker for the field wrapper. Errors say what went wrong and how to fix
  *  it - colour is the second signal, the message is the first. */
-export const invalid = style({});
+export const invalid = style({})
 
 export const label = style({
   fontFamily: sys.font.mono,
@@ -14,7 +14,7 @@ export const label = style({
   letterSpacing: '0.09em',
   textTransform: 'uppercase',
   color: vars.color.muted,
-});
+})
 
 export const control = style({
   width: '100%',
@@ -37,7 +37,7 @@ export const control = style({
     },
     [`${invalid} &`]: { borderColor: vars.color.danger },
   },
-});
+})
 
 export const textarea = style({
   height: 'auto',
@@ -45,20 +45,20 @@ export const textarea = style({
   lineHeight: 1.5,
   fontSize: sys.fontSize.small,
   resize: 'none',
-});
+})
 
 /** Wrap a select with this and render the caret inside it. */
-export const selectWrap = style({ position: 'relative', display: 'flex', alignItems: 'center' });
-export const select = style({ appearance: 'none', cursor: 'pointer' });
+export const selectWrap = style({ position: 'relative', display: 'flex', alignItems: 'center' })
+export const select = style({ appearance: 'none', cursor: 'pointer' })
 export const caret = style({
   position: 'absolute',
   right: '9px',
   color: vars.color.muted,
   pointerEvents: 'none',
-});
+})
 
 /** URLs, dates, anything you read character by character. */
-export const monoControl = style({ fontFamily: sys.font.mono, fontSize: sys.fontSize.small });
+export const monoControl = style({ fontFamily: sys.font.mono, fontSize: sys.fontSize.small })
 
 export const hint = style({
   fontFamily: sys.font.mono,
@@ -67,4 +67,4 @@ export const hint = style({
   selectors: {
     [`${invalid} &`]: { color: vars.color.danger },
   },
-});
+})

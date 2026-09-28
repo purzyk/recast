@@ -78,8 +78,7 @@ export function NewApplicationForm() {
         <div className={warnStyles.warning} role="status">
           <span className={warnStyles.label}>Already in your pipeline</span>
           <p className={warnStyles.text}>
-            You applied to this company and role before. Open that record instead of starting a
-            second one?
+            You applied to this company and role before. Open that record instead of starting a second one?
           </p>
           <div className={`${warnStyles.record} ${statusTone[duplicate.status]}`}>
             <span className={warnStyles.recordCompany}>{duplicate.company}</span>
@@ -92,11 +91,7 @@ export function NewApplicationForm() {
             <Link href={`/applications/${duplicate.id}`} className={buttonStyles.button.secondary}>
               Open the existing one
             </Link>
-            <button
-              type="button"
-              className={buttonStyles.button.ghost}
-              onClick={() => setDuplicate(null)}
-            >
+            <button type="button" className={buttonStyles.button.ghost} onClick={() => setDuplicate(null)}>
               Add anyway
             </button>
           </div>
@@ -174,11 +169,7 @@ export function NewApplicationForm() {
         <Link href="/" className={buttonStyles.button.ghost}>
           Cancel
         </Link>
-        <button
-          type="submit"
-          disabled={pending}
-          className={`${buttonStyles.button.primary} ${buttonStyles.large}`}
-        >
+        <button type="submit" disabled={pending} className={`${buttonStyles.button.primary} ${buttonStyles.large}`}>
           {pending ? 'Saving…' : 'Save'}
           <span className={srOnly}> application</span>
         </button>

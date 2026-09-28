@@ -4,9 +4,9 @@
  * status rule under each header. That is the whole idea; if it reads as too
  * austere, tint the column headers to surface rather than adding gutters.
  */
-import { style } from '@vanilla-extract/css';
-import { bp, sys, vars } from '../app/theme.css';
-import { tone } from '../styles/status.css';
+import { style } from '@vanilla-extract/css'
+import { bp, sys, vars } from '../app/theme.css'
+import { tone } from '../styles/status.css'
 
 export const board = style({
   flex: 1,
@@ -22,7 +22,7 @@ export const board = style({
       overflowX: 'auto',
     },
   },
-});
+})
 
 export const column = style({
   display: 'flex',
@@ -30,7 +30,7 @@ export const column = style({
   minWidth: 0,
   borderRight: `${sys.border.width} solid ${vars.color.border}`,
   selectors: { '&:last-child': { borderRight: 0 } },
-});
+})
 
 export const columnHeader = style({
   flex: 'none',
@@ -41,15 +41,15 @@ export const columnHeader = style({
   padding: `0 ${sys.space.s3}`,
   borderBottom: `${sys.border.width} solid ${vars.color.border}`,
   '@media': { [bp.laptop]: { padding: `0 ${sys.space.s2}` } },
-});
+})
 
-export const columnGlyph = style({ display: 'flex', flex: 'none', color: tone });
+export const columnGlyph = style({ display: 'flex', flex: 'none', color: tone })
 
 export const columnName = style({
   fontSize: sys.fontSize.small,
   fontWeight: 600,
   letterSpacing: '0.01em',
-});
+})
 
 export const columnCount = style({
   marginLeft: 'auto',
@@ -57,10 +57,10 @@ export const columnCount = style({
   fontSize: sys.fontSize.meta,
   fontVariantNumeric: 'tabular-nums',
   color: vars.color.muted,
-});
+})
 
 /** The status rule. Carries the colour; the glyph carries the meaning. */
-export const columnRule = style({ flex: 'none', height: '2px', background: tone });
+export const columnRule = style({ flex: 'none', height: '2px', background: tone })
 
 /** ul, not a div - position and count get announced. */
 export const stack = style({
@@ -78,4 +78,4 @@ export const stack = style({
   overflowY: 'auto',
   overflowX: 'hidden',
   '@media': { [bp.laptop]: { padding: sys.space.s2 } },
-});
+})

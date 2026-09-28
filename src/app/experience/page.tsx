@@ -28,19 +28,11 @@ function excerpt(body: string): string {
     .replace(/\*\*/g, '')
 }
 
-export default async function ExperiencePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ kind?: string }>
-}) {
+export default async function ExperiencePage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
   const { kind: rawKind } = await searchParams
   const kind = rawKind && isExperienceKind(rawKind) ? rawKind : undefined
 
-  const [entries, counts, lastEdited] = await Promise.all([
-    getEntries(kind),
-    getKindCounts(),
-    getLastEdited(),
-  ])
+  const [entries, counts, lastEdited] = await Promise.all([getEntries(kind), getKindCounts(), getLastEdited()])
 
   const total = counts[0]?.count ?? 0
 
@@ -133,9 +125,7 @@ export default async function ExperiencePage({
                     const meta = [entry.period, parent && `part of ${parent}`].filter(Boolean).join(' · ')
                     return (
                       <tr key={entry.id} className={table.row}>
-                        <td
-                          className={`${table.td} ${styles.titleCell}`}
-                        >
+                        <td className={`${table.td} ${styles.titleCell}`}>
                           <Link href={`/experience/${entry.id}`}>{entry.title}</Link>
                           {meta && <span className={styles.entryMeta}>{meta}</span>}
                           <span className={styles.excerpt}>{excerpt(entry.body)}</span>
@@ -149,9 +139,8 @@ export default async function ExperiencePage({
                 </tbody>
               </table>
               <p className={styles.footnote}>
-                &ldquo;Used in&rdquo; counts the tailored documents an entry has fed. An entry
-                sitting at zero either needs rewriting, or is a sign you are applying for the wrong
-                jobs.
+                &ldquo;Used in&rdquo; counts the tailored documents an entry has fed. An entry sitting at zero either
+                needs rewriting, or is a sign you are applying for the wrong jobs.
               </p>
             </>
           )}

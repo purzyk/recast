@@ -4,7 +4,10 @@ import { SEED } from './seed'
 
 async function openApplication(page: Page, company: string) {
   await page.goto('/')
-  await page.getByRole('link', { name: new RegExp(company) }).first().click()
+  await page
+    .getByRole('link', { name: new RegExp(company) })
+    .first()
+    .click()
   await expect(page.getByRole('heading', { level: 1, name: company })).toBeVisible()
 }
 

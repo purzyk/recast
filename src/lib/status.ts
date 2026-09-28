@@ -6,8 +6,8 @@
  * must never be rendered as colour alone. Every glyph is built from one
  * primitive, a circle: opened, filled, halved, doubled, struck.
  */
-export const STATUS_ORDER = ['saved', 'applied', 'interview', 'offer', 'rejected'] as const;
-export type Status = (typeof STATUS_ORDER)[number];
+export const STATUS_ORDER = ['saved', 'applied', 'interview', 'offer', 'rejected'] as const
+export type Status = (typeof STATUS_ORDER)[number]
 
 export const STATUS_LABEL: Record<Status, string> = {
   saved: 'Saved',
@@ -15,16 +15,16 @@ export const STATUS_LABEL: Record<Status, string> = {
   interview: 'Interview',
   offer: 'Offer',
   rejected: 'Rejected',
-};
+}
 
 /** Statuses an application can still move forward from. */
-export const OPEN_STATUSES: Status[] = ['saved', 'applied', 'interview'];
+export const OPEN_STATUSES: Status[] = ['saved', 'applied', 'interview']
 
 export type GlyphShape =
   | { kind: 'circle'; cx: number; cy: number; r: number; filled?: boolean; strokeWidth?: number }
-  | { kind: 'path'; d: string; filled?: boolean; strokeWidth?: number };
+  | { kind: 'path'; d: string; filled?: boolean; strokeWidth?: number }
 
-export const GLYPH_VIEWBOX = '0 0 14 14';
+export const GLYPH_VIEWBOX = '0 0 14 14'
 
 /** Render at 14px in the column header and badge; currentColor is the tone. */
 export const STATUS_GLYPH: Record<Status, GlyphShape[]> = {
@@ -47,7 +47,7 @@ export const STATUS_GLYPH: Record<Status, GlyphShape[]> = {
     { kind: 'circle', cx: 7, cy: 7, r: 4.2, strokeWidth: 1.4 },
     { kind: 'path', d: 'M4 10 10 4', strokeWidth: 1.4 },
   ],
-};
+}
 
 /** The external-link mark shown when a posting URL was saved. Needs
  *  visually hidden text beside it - a title attribute is not enough. */
@@ -55,4 +55,4 @@ export const EXTERNAL_MARK = {
   viewBox: '0 0 10 10',
   d: 'M2.6 7.4 7.4 2.6M4.2 2.6h3.2v3.2',
   strokeWidth: 1.2,
-};
+}

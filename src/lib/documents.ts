@@ -74,7 +74,9 @@ export async function getDocument(id: number): Promise<DocumentDetail | null> {
     model: row.model,
     inputTokens: row.inputTokens,
     outputTokens: row.outputTokens,
-    entryTitles: new Map([...row.sources.map((source) => source.entry), ...extra].map((entry) => [entry.id, entry.title])),
+    entryTitles: new Map(
+      [...row.sources.map((source) => source.entry), ...extra].map((entry) => [entry.id, entry.title]),
+    ),
   }
 }
 

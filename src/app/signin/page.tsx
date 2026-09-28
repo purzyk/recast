@@ -9,20 +9,14 @@ import * as styles from './page.css'
  * built from the existing tokens rather than inventing anything: the panel is
  * surface on bg with a hairline, same as a card.
  */
-export default async function SignInPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>
-}) {
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams
 
   return (
     <main className={styles.shell}>
       <div className={styles.panel}>
         <h1 className={styles.wordmark}>Recast</h1>
-        <p className={styles.blurb}>
-          A job application tracker. Sign in to continue.
-        </p>
+        <p className={styles.blurb}>A job application tracker. Sign in to continue.</p>
 
         {error && (
           <p className={styles.error}>

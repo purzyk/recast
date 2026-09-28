@@ -45,7 +45,9 @@ describe('highlight', () => {
 
   it('reassembles to the original text', () => {
     const text = 'We need TypeScript, React and testing experience.'
-    const joined = highlight(text, ['react', 'testing', 'missing']).map((segment) => segment.text).join('')
+    const joined = highlight(text, ['react', 'testing', 'missing'])
+      .map((segment) => segment.text)
+      .join('')
     expect(joined).toBe(text)
   })
 })

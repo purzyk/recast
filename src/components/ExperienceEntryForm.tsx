@@ -97,8 +97,8 @@ export function ExperienceEntryForm({
           className={`${fieldStyles.control} ${fieldStyles.textarea}`}
         />
         <span className={fieldStyles.hint}>
-          Work and projects: an intro line, then one &ldquo;- &rdquo; bullet per line. Skills: the
-          items of one Key Skills row, the title being its label.
+          Work and projects: an intro line, then one &ldquo;- &rdquo; bullet per line. Skills: the items of one Key
+          Skills row, the title being its label.
         </span>
       </div>
 

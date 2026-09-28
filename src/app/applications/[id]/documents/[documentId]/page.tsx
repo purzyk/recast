@@ -15,11 +15,7 @@ export const dynamic = 'force-dynamic'
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 const numberFormat = new Intl.NumberFormat('en-GB')
 
-export default async function DocumentPage({
-  params,
-}: {
-  params: Promise<{ id: string; documentId: string }>
-}) {
+export default async function DocumentPage({ params }: { params: Promise<{ id: string; documentId: string }> }) {
   const { id: rawId, documentId: rawDocumentId } = await params
   const applicationId = Number(rawId)
   const documentId = Number(rawDocumentId)
@@ -68,12 +64,7 @@ export default async function DocumentPage({
           <a href={printHref} target="_blank" rel="noopener" className={buttonStyles.button.secondary}>
             Preview
           </a>
-          <a
-            href={`${printHref}?print`}
-            target="_blank"
-            rel="noopener"
-            className={buttonStyles.button.primary}
-          >
+          <a href={`${printHref}?print`} target="_blank" rel="noopener" className={buttonStyles.button.primary}>
             Download PDF
           </a>
         </div>
@@ -82,10 +73,7 @@ export default async function DocumentPage({
       <div className={`${screen.body} ${styles.twoPane}`}>
         <section className={screen.pane}>
           <h2 className={screen.paneLabel}>Source — matched phrases underlined</h2>
-          <Posting
-            text={document.jobDescription ?? ''}
-            phrases={matched.map((requirement) => requirement.phrase)}
-          />
+          <Posting text={document.jobDescription ?? ''} phrases={matched.map((requirement) => requirement.phrase)} />
           {requirements.length > 0 && (
             <p className={styles.note}>
               {matched.length} of {requirements.length} requirements matched to an experience entry.

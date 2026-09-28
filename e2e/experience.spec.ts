@@ -27,7 +27,10 @@ test('an entry is added, edited and deleted', async ({ page }) => {
 
 test('the kind filter narrows the library', async ({ page }) => {
   await page.goto('/experience')
-  await page.getByRole('navigation', { name: 'Filter by kind' }).getByRole('link', { name: /Skills/ }).click()
+  await page
+    .getByRole('navigation', { name: 'Filter by kind' })
+    .getByRole('link', { name: /Skills/ })
+    .click()
 
   await expect(page.getByRole('link', { name: 'Testing' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Frontend Engineer — Harbour Digital' })).toHaveCount(0)

@@ -23,11 +23,7 @@ export const dynamic = 'force-dynamic'
 
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' })
 
-export default async function ApplicationDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = await params
   const id = Number(rawId)
   if (!Number.isInteger(id) || id <= 0) notFound()
@@ -133,9 +129,7 @@ export default async function ApplicationDetailPage({
               <span className={pageStyles.noteDate}> — {dateFormat.format(note.createdAt)}</span>
             </p>
           ))}
-          {application.notes.length === 0 && (
-            <p className={screen.prose}>Nothing noted yet.</p>
-          )}
+          {application.notes.length === 0 && <p className={screen.prose}>Nothing noted yet.</p>}
 
           <form action={addNote} className={pageStyles.noteForm}>
             <input type="hidden" name="id" value={application.id} />
@@ -171,7 +165,9 @@ export default async function ApplicationDetailPage({
                       <span className={table.dimCell}>v{document.version}</span>
                     </td>
                     <td className={`${table.td} ${table.num}`}>
-                      {document.edited ? `edited ${elapsed(document.updatedAt)}` : dateFormat.format(document.createdAt)}
+                      {document.edited
+                        ? `edited ${elapsed(document.updatedAt)}`
+                        : dateFormat.format(document.createdAt)}
                     </td>
                   </tr>
                 ))}
@@ -189,7 +185,9 @@ export default async function ApplicationDetailPage({
             Open tailoring
           </Link>
           <p className={pageStyles.tailorHint}>
-            {documents.length > 0 ? 'Generates a new version, never overwrites one' : 'Drafts a CV or cover letter from the experience library'}
+            {documents.length > 0
+              ? 'Generates a new version, never overwrites one'
+              : 'Drafts a CV or cover letter from the experience library'}
           </p>
         </section>
       </div>

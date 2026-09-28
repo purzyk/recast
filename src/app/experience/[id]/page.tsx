@@ -8,11 +8,7 @@ import { getEntries, getEntry, KIND_LABEL_ONE } from '@/lib/experience'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditExperienceEntryPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function EditExperienceEntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = await params
   const id = Number(rawId)
   if (!Number.isInteger(id) || id <= 0) notFound()

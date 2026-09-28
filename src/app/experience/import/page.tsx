@@ -8,7 +8,10 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export default async function ImportPage() {
-  const [existing, profile] = await Promise.all([db.experienceEntry.count(), db.profile.findUnique({ where: { id: 1 } })])
+  const [existing, profile] = await Promise.all([
+    db.experienceEntry.count(),
+    db.profile.findUnique({ where: { id: 1 } }),
+  ])
 
   return (
     <div className={styles.shell}>

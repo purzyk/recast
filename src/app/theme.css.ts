@@ -9,7 +9,7 @@
  * Dark is primary. If a screen needs a value that is not in this file, the
  * scale is wrong - fix it here rather than reaching for a literal.
  */
-import { createGlobalTheme, createTheme, createThemeContract } from '@vanilla-extract/css';
+import { createGlobalTheme, createTheme, createThemeContract } from '@vanilla-extract/css'
 
 /* ---------------------------------------------------------------- *
  * Themed: colour only
@@ -47,7 +47,7 @@ export const vars = createThemeContract({
     offer: null,
     rejected: null,
   },
-});
+})
 
 export const darkTheme = createTheme(vars, {
   color: {
@@ -69,7 +69,7 @@ export const darkTheme = createTheme(vars, {
     offer: '#63D6A2',
     rejected: '#C86F63',
   },
-});
+})
 
 export const lightTheme = createTheme(vars, {
   color: {
@@ -94,7 +94,7 @@ export const lightTheme = createTheme(vars, {
     offer: '#106C4B',
     rejected: '#AC4338',
   },
-});
+})
 
 /* ---------------------------------------------------------------- *
  * Not themed: scale, type, shape
@@ -115,12 +115,12 @@ export const sys = createGlobalTheme(':root', {
   },
   fontSize: {
     micro: '10px', // uppercase mono labels, kbd hints
-    meta: '11px',  // dates, counts, search - mono
+    meta: '11px', // dates, counts, search - mono
     small: '12px', // role titles, buttons, secondary lines
-    body: '13px',  // company name, table cells
-    h3: '15px',    // wordmark, panel titles
-    h2: '18px',    // section titles
-    h1: '22px',    // screen titles
+    body: '13px', // company name, table cells
+    h3: '15px', // wordmark, panel titles
+    h2: '18px', // section titles
+    h1: '22px', // screen titles
   },
   radius: {
     sm: '3px', // buttons, inputs, chips, badges
@@ -129,7 +129,7 @@ export const sys = createGlobalTheme(':root', {
   border: {
     width: '1px', // one width, everywhere
   },
-});
+})
 
 /** There are no shadow tokens, by design. Depth is surface against bg plus a
  *  hairline. If you want a shadow, you want borderStrong. */
@@ -144,4 +144,4 @@ export const bp = {
   narrow: 'screen and (max-width: 1040px)',
   /** app bar folds its nav into a menu */
   mobile: 'screen and (max-width: 720px)',
-} as const;
+} as const

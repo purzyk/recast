@@ -50,8 +50,13 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
     const controller = new AbortController()
     abortRef.current = controller
     try {
-      const response = await fetch('/api/import', { method: 'POST', body: new FormData(form), signal: controller.signal })
-      if (!response.ok || !response.body) throw new Error((await response.text()) || `Request failed (${response.status})`)
+      const response = await fetch('/api/import', {
+        method: 'POST',
+        body: new FormData(form),
+        signal: controller.signal,
+      })
+      if (!response.ok || !response.body)
+        throw new Error((await response.text()) || `Request failed (${response.status})`)
 
       const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
       let buffer = ''
@@ -129,7 +134,15 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
               <label htmlFor="file" className={fieldStyles.label}>
                 CV as PDF
               </label>
-              <input id="file" name="file" type="file" accept="application/pdf" required className={fieldStyles.control} style={{ height: 'auto', padding: 6 }} />
+              <input
+                id="file"
+                name="file"
+                type="file"
+                accept="application/pdf"
+                required
+                className={fieldStyles.control}
+                style={{ height: 'auto', padding: 6 }}
+              />
               <span className={fieldStyles.hint}>Up to 10 MB. Read directly, layout included.</span>
             </div>
           ) : (
@@ -163,8 +176,8 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
             {preview ? 'Read again' : 'Read the CV'}
           </button>
           <p className={styles.note}>
-            Nothing is saved until you choose below. The CV&rsquo;s wording is kept: this step restructures, it
-            does not rewrite.
+            Nothing is saved until you choose below. The CV&rsquo;s wording is kept: this step restructures, it does not
+            rewrite.
           </p>
         </form>
       </section>
@@ -208,7 +221,9 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
           </div>
         )}
 
-        {!phase && !preview && <p className={screen.prose}>The structured result appears here before anything is saved.</p>}
+        {!phase && !preview && (
+          <p className={screen.prose}>The structured result appears here before anything is saved.</p>
+        )}
 
         {preview && (
           <>
@@ -220,7 +235,9 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
               {preview.profile.portfolio.url && <> · portfolio {preview.profile.portfolio.label}</>}
               {preview.profile.quotes.length > 0 && <> · {preview.profile.quotes.length} quoted reference(s)</>}
             </p>
-            <p className={styles.note}>{counts.map((item) => `${item.count} ${KIND_LABEL_ONE[item.kind].toLowerCase()}`).join(' · ')}</p>
+            <p className={styles.note}>
+              {counts.map((item) => `${item.count} ${KIND_LABEL_ONE[item.kind].toLowerCase()}`).join(' · ')}
+            </p>
 
             <table className={table.table} style={{ marginTop: 12 }}>
               <thead>
@@ -269,8 +286,14 @@ export function ImportRunner({ existing, hasProfile }: { existing: number; hasPr
                 ))}
               </fieldset>
               <label className={fieldStyles.hint} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <input type="checkbox" checked={replaceProfile} onChange={(event) => setReplaceProfile(event.target.checked)} />
-                {hasProfile ? 'Replace the profile (name, contact, education) with this one' : 'Save this as the profile'}
+                <input
+                  type="checkbox"
+                  checked={replaceProfile}
+                  onChange={(event) => setReplaceProfile(event.target.checked)}
+                />
+                {hasProfile
+                  ? 'Replace the profile (name, contact, education) with this one'
+                  : 'Save this as the profile'}
               </label>
               <button
                 type="button"

@@ -12,11 +12,7 @@ import { elapsed } from '@/lib/elapsed'
 
 export const dynamic = 'force-dynamic'
 
-export default async function CompaniesPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ open?: string }>
-}) {
+export default async function CompaniesPage({ searchParams }: { searchParams: Promise<{ open?: string }> }) {
   const { open } = await searchParams
   const openOnly = open === '1'
   const companies = await getCompanies(openOnly)
@@ -33,15 +29,12 @@ export default async function CompaniesPage({
           </p>
           <h1 className={screen.title}>Companies</h1>
           <p className={screen.subtitle}>
-            {companies.length} {companies.length === 1 ? 'company' : 'companies'} ·{' '}
-            {totalApplications} {totalApplications === 1 ? 'application' : 'applications'}
+            {companies.length} {companies.length === 1 ? 'company' : 'companies'} · {totalApplications}{' '}
+            {totalApplications === 1 ? 'application' : 'applications'}
           </p>
         </div>
         <div className={styles.filters}>
-          <Link
-            href="/companies"
-            className={openOnly ? buttonStyles.button.ghost : buttonStyles.button.secondary}
-          >
+          <Link href="/companies" className={openOnly ? buttonStyles.button.ghost : buttonStyles.button.secondary}>
             All outcomes
           </Link>
           <Link

@@ -87,14 +87,14 @@ export default async function TailorPage({ params }: { params: Promise<{ id: str
           <p className={styles.note}>
             {entryCount === 0 ? (
               <>
-                The <Link href="/experience">experience library</Link> is empty. Tailoring can only draw on what is
-                in it.
+                The <Link href="/experience">experience library</Link> is empty. Tailoring can only draw on what is in
+                it.
               </>
             ) : (
               <>
-                Draws only on the {entryCount} entries in the <Link href="/experience">experience library</Link>.
-                Every block names the entries it used. Generating always adds a new version and never overwrites
-                one you already have.
+                Draws only on the {entryCount} entries in the <Link href="/experience">experience library</Link>. Every
+                block names the entries it used. Generating always adds a new version and never overwrites one you
+                already have.
               </>
             )}
           </p>

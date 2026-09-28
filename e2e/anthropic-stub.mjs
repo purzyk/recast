@@ -9,7 +9,8 @@ import http from 'node:http'
 const PORT = Number(process.env.STUB_PORT ?? 3101)
 
 function parseEntries(content) {
-  const pattern = /<entry id="(\d+)" kind="(\w+)"[^>]*?(?: parent="(\d+)")?[^>]*>\n<title>(.*)<\/title>\n([\s\S]*?)\n<\/entry>/g
+  const pattern =
+    /<entry id="(\d+)" kind="(\w+)"[^>]*?(?: parent="(\d+)")?[^>]*>\n<title>(.*)<\/title>\n([\s\S]*?)\n<\/entry>/g
   return [...content.matchAll(pattern)].map(([, id, kind, parent, title, body]) => ({
     id: Number(id),
     kind,
@@ -40,7 +41,10 @@ function cv(entries, posting) {
       sections: [
         ...entries
           .filter((entry) => entry.parentId === job.id)
-          .map((project) => ({ projectId: project.id, bullets: project.bullets.map((text) => ({ text, entryIds: [project.id] })) })),
+          .map((project) => ({
+            projectId: project.id,
+            bullets: project.bullets.map((text) => ({ text, entryIds: [project.id] })),
+          })),
         { projectId: 0, bullets: job.bullets.slice(0, 2).map((text) => ({ text, entryIds: [job.id] })) },
       ],
     })),
@@ -74,7 +78,15 @@ const imported = (cv) => ({
     quotes: [],
   },
   entries: [
-    { key: 'e1', kind: 'work', title: `Developer — ${cv.split('\n')[1]}`, period: '2019 – 2023', body: '- Imported bullet', links: '', parentKey: '' },
+    {
+      key: 'e1',
+      kind: 'work',
+      title: `Developer — ${cv.split('\n')[1]}`,
+      period: '2019 – 2023',
+      body: '- Imported bullet',
+      links: '',
+      parentKey: '',
+    },
     { key: 'e2', kind: 'skill', title: 'Imported skills', period: '', body: 'Svelte, Vue', links: '', parentKey: '' },
   ],
 })
