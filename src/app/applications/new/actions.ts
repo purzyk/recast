@@ -29,7 +29,7 @@ export async function findDuplicate(company: string, role: string): Promise<Dupl
   const match = await db.application.findFirst({
     where: {
       role: { equals: trimmedRole, mode: 'insensitive' },
-      company: { name: { equals: trimmedCompany, mode: 'insensitive' } },
+      company: { name: { equals: trimmedCompany } },
     },
     include: {
       company: { select: { name: true } },
