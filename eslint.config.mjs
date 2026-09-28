@@ -16,6 +16,10 @@ export default defineConfig([
   {
     files: ['e2e/**/*.ts'],
     ...playwright.configs['flat/recommended'],
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
+      'playwright/expect-expect': ['warn', { assertFunctionNames: ['screenshot'] }],
+    },
   },
   {
     // Setup prepares state; the specs that depend on it do the asserting.

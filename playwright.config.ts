@@ -23,7 +23,7 @@ export default defineConfig({
       name: 'desktop',
       use: { ...devices['Desktop Chrome'], storageState: STORAGE_STATE },
       dependencies: ['setup'],
-      testIgnore: /mobile\.spec\.ts/,
+      testIgnore: [/mobile\.spec\.ts/, /visual\.spec\.ts/],
     },
     {
       name: 'phone',
