@@ -1,0 +1,82 @@
+name: CI
+
+# Runs on every pull request and on pushes to any branch but main. Main
+# runs it through deploy.yml instead, which calls this workflow and only
+# deploys when it passes, so a push to main is checked once, not twice.
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A newer push to the same pull request makes the older run pointless. Never
+  # cancel on main: that run is the one gating a deploy.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    name: Lint, format, types, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The client is gitignored, and the type check imports it.
+      - run: npx prisma generate
+
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    # The e2e run talks to a local stub of the Anthropic API, so it needs no
+    # key and costs nothing.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: recast
+          POSTGRES_PASSWORD: recast
+          POSTGRES_DB: recast_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U recast -d recast_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
