@@ -1,13 +1,13 @@
 name: CI
 
-# Runs on every pull request and on pushes to any branch but main. Main
-# runs it through deploy.yml instead, which calls this workflow and only
-# deploys when it passes, so a push to main is checked once, not twice.
+# Runs on pull requests only: a branch push trigger as well would run every
+# job twice for a branch with an open pull request. Main runs it through
+# deploy.yml, which calls this workflow and only deploys when it passes.
+# workflow_dispatch runs it by hand on a branch that has no pull request yet.
 on:
   pull_request:
-  push:
-    branches-ignore: [main]
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
