@@ -12,7 +12,7 @@ export function elapsed(from: Date, now: Date = new Date()): string {
   if (seconds < 3_600) return 'just now'
   if (days === 0) return 'today'
   if (days === 1) return 'yesterday'
-  if (days < 7) return `${days}d`
+  if (days < 6) return `${days}d`
   if (days < 30) return `${Math.floor(days / 7)}w`
   if (days < 365) return `${Math.floor(days / 30)}mo`
   return `${Math.floor(days / 365)}y`
