@@ -5,15 +5,19 @@ const sdk = vi.hoisted(() => ({ stream: vi.fn() }))
 
 vi.mock('@anthropic-ai/sdk', () => ({
   default: class {
+    static AnthropicError = class extends Error {}
     beta = { messages: { stream: sdk.stream } }
   },
 }))
 
+const { default: Anthropic } = await import('@anthropic-ai/sdk')
 const { tailor, TailorError } = await import('@/lib/tailor')
 
-type StreamEvent = { type: 'content_block_start'; content_block: { type: string } }
+type StreamEvent =
+  | { type: 'content_block_start'; content_block: { type: string } }
+  | { type: 'message_delta'; delta: { stop_reason: string } }
 
-function fakeStream(message: object, events: StreamEvent[] = []) {
+function fakeStream(message: object, events: StreamEvent[] = [], error?: Error) {
   let listener: ((event: StreamEvent) => void) | undefined
   return {
     on: (_name: string, callback: (event: StreamEvent) => void) => {
@@ -21,10 +25,13 @@ function fakeStream(message: object, events: StreamEvent[] = []) {
     },
     finalMessage: async () => {
       for (const event of events) listener?.(event)
+      if (error) throw error
       return { model: 'claude-test', usage: { input_tokens: 100, output_tokens: 50 }, stop_reason: 'end_turn', ...message }
     },
   }
 }
+
+const parseError = () => new Anthropic.AnthropicError('Failed to parse structured output: SyntaxError')
 
 const entry = (overrides: Partial<ExperienceEntryRow> & Pick<ExperienceEntryRow, 'id' | 'kind' | 'title'>): ExperienceEntryRow => ({
   period: null,
@@ -186,5 +193,24 @@ describe('tailor', () => {
 
     await expect(run).rejects.toBeInstanceOf(TailorError)
     await expect(run).rejects.toThrow(reason)
+  })
+
+  it.each([
+    ['max_tokens', 'cut off'],
+    ['refusal', 'declined'],
+    ['end_turn', 'expected shape'],
+  ])('explains partial output the SDK could not parse (%s)', async (stopReason, reason) => {
+    sdk.stream.mockReturnValue(fakeStream({}, [{ type: 'message_delta', delta: { stop_reason: stopReason } }], parseError()))
+    const run = tailor(input, () => {})
+
+    await expect(run).rejects.toBeInstanceOf(TailorError)
+    await expect(run).rejects.toThrow(reason)
+  })
+
+  it('passes API errors through for the route to describe', async () => {
+    const error = new Error('overloaded')
+    sdk.stream.mockReturnValue(fakeStream({}, [], error))
+
+    await expect(tailor(input, () => {})).rejects.toBe(error)
   })
 })

@@ -102,6 +102,9 @@ export interface TailorResult {
 
 export class TailorError extends Error {}
 
+export const isParseError = (error: unknown) =>
+  error instanceof Anthropic.AnthropicError && error.message.startsWith('Failed to parse structured output')
+
 const attr = (value: string) => value.replace(/"/g, '&quot;')
 
 function renderEntries(entries: ExperienceEntryRow[]): string {
@@ -279,26 +282,33 @@ export async function tailor(
     phase = next
     onPhase(next)
   }
+  let stopReason: string | null = null
   // Keyed on block starts, not deltas: thinking text is omitted by default, so
   // thinking deltas may never arrive even while the model is thinking.
   stream.on('streamEvent', (event) => {
+    if (event.type === 'message_delta') stopReason = event.delta.stop_reason
     if (event.type !== 'content_block_start') return
     if (event.content_block.type === 'thinking') advance('matching')
     if (event.content_block.type === 'text') advance('drafting')
   })
 
-  const message = await stream.finalMessage()
+  const fail = (reason: string | null) => {
+    if (reason === 'refusal') return new TailorError('The model declined this request. Nothing was saved.')
+    if (reason === 'max_tokens') return new TailorError('The response was cut off before it finished. Nothing was saved.')
+    return new TailorError('The response did not match the expected shape. Nothing was saved.')
+  }
 
-  if (message.stop_reason === 'refusal') {
-    throw new TailorError('The model declined this request. Nothing was saved.')
-  }
-  if (message.stop_reason === 'max_tokens') {
-    throw new TailorError('The response was cut off before it finished. Nothing was saved.')
-  }
+  // The SDK parses the output inside finalMessage, so a cut-off or refused
+  // response carrying partial JSON throws there, before its stop reason can
+  // be read from the message.
+  const message = await stream.finalMessage().catch((error: unknown) => {
+    if (stopReason === 'refusal' || stopReason === 'max_tokens' || isParseError(error)) throw fail(stopReason)
+    throw error
+  })
+
+  if (message.stop_reason === 'refusal' || message.stop_reason === 'max_tokens') throw fail(message.stop_reason)
   const output = message.parsed_output as z.infer<typeof CvOutput> | z.infer<typeof LetterOutput> | null
-  if (!output) {
-    throw new TailorError('The response did not match the expected shape. Nothing was saved.')
-  }
+  if (!output) throw fail(null)
 
   const requirements = output.requirements.map((requirement) => ({
     phrase: requirement.phrase,

@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import { z } from 'zod'
 import { EXPERIENCE_KINDS } from '@/lib/experience-kinds'
-import type { TailorPhase } from '@/lib/tailor'
+import { isParseError, type TailorPhase } from '@/lib/tailor'
 
 const MODEL = process.env.RECAST_MODEL ?? 'claude-opus-5'
 
@@ -93,7 +93,9 @@ export async function importCv(
   }, { signal })
 
   let phase: TailorPhase = 'reading'
+  let stopReason: string | null = null
   stream.on('streamEvent', (event) => {
+    if (event.type === 'message_delta') stopReason = event.delta.stop_reason
     if (event.type !== 'content_block_start') return
     const next = event.content_block.type === 'thinking' ? 'matching' : event.content_block.type === 'text' ? 'drafting' : phase
     if (next !== phase) {
@@ -102,10 +104,20 @@ export async function importCv(
     }
   })
 
-  const message = await stream.finalMessage()
-  if (message.stop_reason === 'refusal') throw new ImportError('The model declined to read this document.')
-  if (message.stop_reason === 'max_tokens') throw new ImportError('The CV was too long to read in one go.')
-  if (!message.parsed_output) throw new ImportError('The response did not match the expected shape.')
+  const fail = (reason: string | null) => {
+    if (reason === 'refusal') return new ImportError('The model declined to read this document.')
+    if (reason === 'max_tokens') return new ImportError('The CV was too long to read in one go.')
+    return new ImportError('The response did not match the expected shape.')
+  }
+
+  // As in tailor(): partial JSON makes finalMessage throw before the stop
+  // reason can be read.
+  const message = await stream.finalMessage().catch((error: unknown) => {
+    if (stopReason === 'refusal' || stopReason === 'max_tokens' || isParseError(error)) throw fail(stopReason)
+    throw error
+  })
+  if (message.stop_reason === 'refusal' || message.stop_reason === 'max_tokens') throw fail(message.stop_reason)
+  if (!message.parsed_output) throw fail(null)
 
   const preview = message.parsed_output
   const keys = new Set(preview.entries.map((entry) => entry.key))

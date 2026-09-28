@@ -5,16 +5,29 @@ const sdk = vi.hoisted(() => ({ stream: vi.fn() }))
 
 vi.mock('@anthropic-ai/sdk', () => ({
   default: class {
+    static AnthropicError = class extends Error {}
     beta = { messages: { stream: sdk.stream } }
   },
 }))
 
+const { default: Anthropic } = await import('@anthropic-ai/sdk')
 const { importCv, ImportError, ImportPreview } = await import('@/lib/import-cv')
 
-const fakeStream = (message: object) => ({
-  on: () => {},
-  finalMessage: async () => ({ stop_reason: 'end_turn', ...message }),
-})
+type StreamEvent = { type: 'message_delta'; delta: { stop_reason: string } }
+
+function fakeStream(message: object, events: StreamEvent[] = [], error?: Error) {
+  let listener: ((event: StreamEvent) => void) | undefined
+  return {
+    on: (_name: string, callback: (event: StreamEvent) => void) => {
+      listener = callback
+    },
+    finalMessage: async () => {
+      for (const event of events) listener?.(event)
+      if (error) throw error
+      return { stop_reason: 'end_turn', ...message }
+    },
+  }
+}
 
 const entry = (key: string, kind: 'work' | 'project' | 'skill' | 'achievement', parentKey = '') => ({
   key,
@@ -80,6 +93,15 @@ describe('importCv', () => {
 
     await expect(run).rejects.toBeInstanceOf(ImportError)
     await expect(run).rejects.toThrow(reason)
+  })
+
+  it('explains a cut-off CV the SDK could not parse', async () => {
+    const error = new Anthropic.AnthropicError('Failed to parse structured output: SyntaxError')
+    sdk.stream.mockReturnValue(fakeStream({}, [{ type: 'message_delta', delta: { stop_reason: 'max_tokens' } }], error))
+    const run = importCv({ type: 'text', text: 'CV' }, () => {})
+
+    await expect(run).rejects.toBeInstanceOf(ImportError)
+    await expect(run).rejects.toThrow('too long')
   })
 })
 
