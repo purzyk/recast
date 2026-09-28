@@ -25,7 +25,7 @@ export const card = style({
 /** 2px of the column's status colour, so a card taken out of context still
  *  says where it belongs. 65% at rest keeps the board quiet. */
 export const spine = style({
-  width: '2px',
+  width: '6px',
   flex: 'none',
   background: tone,
   opacity: 0.65,
